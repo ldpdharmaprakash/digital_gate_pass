@@ -33,7 +33,9 @@ class Hod extends Model
 
     public function departmentGatepasses()
     {
-        return $this->department->gatepasses();
+        return Gatepass::whereHas('student', function($query) {
+            $query->where('department_id', $this->department_id);
+        });
     }
 
     public function pendingGatepasses()

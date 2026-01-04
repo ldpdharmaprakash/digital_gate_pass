@@ -54,32 +54,17 @@
                 animation: fadeIn 0.5s ease-in;
             }
             
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            
             .stat-card {
                 background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
                 backdrop-filter: blur(10px);
                 border: 1px solid rgba(255,255,255,0.2);
             }
-            
-            .btn-primary {
-                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-                transition: all 0.3s ease;
-            }
-            
-            .btn-primary:hover {
-                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-                transform: translateY(-1px);
-            }
         </style>
     </head>
     <body class="font-inter antialiased bg-gray-50" x-data="{ sidebarOpen: false }">
-        <div class="min-h-screen">
+        <div class="min-h-screen flex">
             <!-- Sidebar -->
-            <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+            <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
                 <div class="flex items-center justify-center h-16 navy-gradient">
                     <h1 class="text-white text-xl font-bold">Gatepass System</h1>
                 </div>
@@ -130,7 +115,7 @@
                                     </svg>
                                     Pending Requests
                                 </a>
-                                <a href="{{ route('staff.students') }}" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                                <a href="{{ route('staff.students.index') }}" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
                                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                     </svg>
@@ -209,12 +194,12 @@
                         </div>
                     @endauth
                 </nav>
-            </div>
+            </aside>
 
             <!-- Main content -->
-            <div class="lg:pl-64">
+            <main class="flex-1 lg:ml-0">
                 <!-- Top navigation -->
-                <div class="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
+                <header class="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
                     <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
                         <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden text-gray-500 hover:text-gray-600">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,13 +221,13 @@
                             @endif
                         </div>
                     </div>
-                </div>
+                </header>
 
                 <!-- Page Content -->
-                <main class="p-4 sm:p-6 lg:p-8">
+                <div class="p-4 sm:p-6 lg:p-8">
                     @yield('content')
-                </main>
-            </div>
+                </div>
+            </main>
 
             <!-- Mobile sidebar overlay -->
             <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden" @click="sidebarOpen = false"></div>

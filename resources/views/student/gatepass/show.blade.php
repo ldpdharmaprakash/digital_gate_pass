@@ -162,7 +162,7 @@
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-900">Staff Approval</p>
                             @if($gatepass->staff_approved_at)
-                                <p class="text-xs text-gray-500">{{ $gatepass->staff_approved_by->name }} • {{ $gatepass->staff_approved_at->format('M d, Y h:i A') }}</p>
+                                <p class="text-xs text-gray-500">{{ $gatepass->staffApprovedBy->name ?? 'N/A' }} • {{ $gatepass->staff_approved_at->format('M d, Y h:i A') }}</p>
                                 @if($gatepass->staff_remarks)
                                     <p class="text-xs text-gray-600 mt-1">Remarks: {{ $gatepass->staff_remarks }}</p>
                                 @endif
@@ -192,7 +192,7 @@
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-900">HOD Approval</p>
                             @if($gatepass->hod_approved_at)
-                                <p class="text-xs text-gray-500">{{ $gatepass->hod_approved_by->name }} • {{ $gatepass->hod_approved_at->format('M d, Y h:i A') }}</p>
+                                <p class="text-xs text-gray-500">{{ $gatepass->hodApprovedBy->name ?? 'N/A' }} • {{ $gatepass->hod_approved_at->format('M d, Y h:i A') }}</p>
                                 @if($gatepass->hod_remarks)
                                     <p class="text-xs text-gray-600 mt-1">Remarks: {{ $gatepass->hod_remarks }}</p>
                                 @endif
@@ -223,7 +223,7 @@
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-gray-900">Warden Approval</p>
                                 @if($gatepass->warden_approved_at)
-                                    <p class="text-xs text-gray-500">{{ $gatepass->warden_approved_by->name }} • {{ $gatepass->warden_approved_at->format('M d, Y h:i A') }}</p>
+                                    <p class="text-xs text-gray-500">{{ $gatepass->wardenApprovedBy->name ?? 'N/A' }} • {{ $gatepass->warden_approved_at->format('M d, Y h:i A') }}</p>
                                     @if($gatepass->warden_remarks)
                                         <p class="text-xs text-gray-600 mt-1">Remarks: {{ $gatepass->warden_remarks }}</p>
                                     @endif

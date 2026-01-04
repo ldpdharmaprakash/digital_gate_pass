@@ -154,10 +154,11 @@
                         <a href="{{ route('student.gatepasses.index') }}" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                             Cancel
                         </a>
-                        <button 
+                        <!-- <button 
                             type="submit" 
                             :disabled="submitting"
-                            class="btn-primary px-6 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                            class="btn-secondery px-6 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                            :class="{ 'opacity-50 cursor-not-allowed': submitting }"
                         >
                             <svg x-show="!submitting" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -166,7 +167,43 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                             </svg>
                             <span x-text="submitting ? 'Submitting...' : 'Submit Request'"></span>
-                        </button>
+                        </button> -->
+
+                        <button 
+    type="submit"
+    :disabled="submitting"
+    class="
+        relative inline-flex items-center justify-center
+        px-7 py-2.5
+        text-sm font-semibold tracking-wide
+        text-white
+        rounded-lg
+        bg-gradient-to-r from-indigo-600 to-blue-600
+        shadow-md
+        transition-all duration-300 ease-in-out
+        hover:from-indigo-700 hover:to-blue-700
+        hover:shadow-lg
+        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+        disabled:opacity-60 disabled:cursor-not-allowed
+    "
+    :class="{ 'opacity-60 cursor-not-allowed': submitting }"
+>
+    <!-- Plus Icon -->
+    <svg x-show="!submitting" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+
+    <!-- Loader -->
+    <svg x-show="submitting" class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+        </path>
+    </svg>
+
+    <!-- Text -->
+    <span x-text="submitting ? 'Submitting...' : 'Submit Request'"></span>
+</button>
+
                     </div>
                 </div>
             </form>

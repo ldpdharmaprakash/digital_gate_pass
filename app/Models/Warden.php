@@ -40,6 +40,11 @@ class Warden extends Model
         return Gatepass::where('warden_approved_by', $this->user_id);
     }
 
+    public function hostellerStudents()
+    {
+        return Student::where('hosteller', 'yes');
+    }
+
     public function hostellerGatepasses()
     {
         return Gatepass::whereHas('student', function ($query) {

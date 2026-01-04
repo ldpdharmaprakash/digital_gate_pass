@@ -54,8 +54,10 @@ Route::middleware(['auth', 'role:hod'])->prefix('hod')->name('hod.')->group(func
     Route::get('/gatepasses/pending', [HodController::class, 'pendingGatepasses'])->name('gatepasses.pending');
     Route::post('/gatepasses/{gatepass}/approve', [HodController::class, 'approveGatepass'])->name('gatepasses.approve');
     Route::get('/gatepasses/department', [HodController::class, 'departmentGatepasses'])->name('gatepasses.department');
+    Route::get('/gatepasses/{gatepass}', [HodController::class, 'showGatepass'])->name('gatepasses.show');
     Route::get('/gatepasses/approved', [HodController::class, 'approvedGatepasses'])->name('gatepasses.approved');
     Route::get('/reports', [HodController::class, 'reports'])->name('reports');
+    Route::get('/reports/download', [HodController::class, 'downloadReport'])->name('reports.download');
 });
 
 // Warden Routes
@@ -63,11 +65,13 @@ Route::middleware(['auth', 'role:warden'])->prefix('warden')->name('warden.')->g
     Route::get('/profile', [WardenController::class, 'profile'])->name('profile');
     Route::get('/gatepasses/pending', [WardenController::class, 'pendingGatepasses'])->name('gatepasses.pending');
     Route::post('/gatepasses/{gatepass}/approve', [WardenController::class, 'approveGatepass'])->name('gatepasses.approve');
+    Route::get('/gatepasses/{gatepass}', [WardenController::class, 'showGatepass'])->name('gatepasses.show');
     Route::get('/gatepasses/hostellers', [WardenController::class, 'hostellerGatepasses'])->name('gatepasses.hostellers');
     Route::get('/gatepasses/approved', [WardenController::class, 'approvedGatepasses'])->name('gatepasses.approved');
     Route::get('/verification', [WardenController::class, 'verification'])->name('verification');
-    Route::post('/verification', [WardenController::class, 'verifyGatepass'])->name('verification.verify');
+    Route::post('/verification', [WardenController::class, 'verifyGatepass'])->name('verification.search');
     Route::get('/reports', [WardenController::class, 'reports'])->name('reports');
+    Route::get('/reports/download', [WardenController::class, 'downloadReport'])->name('reports.download');
 });
 
 // Admin Routes
@@ -80,6 +84,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/departments/create', [AdminController::class, 'createDepartment'])->name('departments.create');
     Route::post('/departments', [AdminController::class, 'storeDepartment'])->name('departments.store');
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    Route::get('/reports/download', [AdminController::class, 'downloadReport'])->name('reports.download');
     Route::post('/export/gatepasses', [AdminController::class, 'exportGatepasses'])->name('export.gatepasses');
 });
 

@@ -16,7 +16,7 @@ class HodController extends Controller
 
     public function dashboard()
     {
-        $hod = Auth::user()->hod;
+        $hod = Auth::user()->hod->load(['user', 'department']);
         
         $totalRequests = $hod->pendingGatepasses()->count();
         $approvedToday = $hod->approvedGatepasses()
@@ -35,13 +35,13 @@ class HodController extends Controller
         ];
 
         $pendingGatepasses = $hod->pendingGatepasses()
-            ->with(['student', 'student.department', 'student.user', 'staffApprovedBy'])
+            ->with(['student.user', 'student.department', 'staffApprovedBy'])
             ->latest()
             ->take(5)
             ->get();
 
         $recentApprovals = $hod->approvedGatepasses()
-            ->with(['student', 'student.department'])
+            ->with(['student.user', 'student.department'])
             ->latest('hod_approved_at')
             ->take(5)
             ->get();
@@ -108,11 +108,30 @@ class HodController extends Controller
     {
         $hod = Auth::user()->hod;
         $gatepasses = $hod->departmentGatepasses()
-            ->with(['student', 'student.department', 'student.user'])
+            ->with(['student.user', 'student.department'])
             ->latest()
             ->paginate(10);
 
-        return view('hod.gatepass.department', compact('gatepasses'));
+        return view('hod.department_gatepasses', compact('gatepasses'));
+    }
+
+    public function showGatepass(Gatepass $gatepass)
+    {
+        // Check if gatepass belongs to HOD's department
+        if ($gatepass->student->department_id !== Auth::user()->hod->department_id) {
+            abort(403);
+        }
+
+        // Load all relationships needed for the view
+        $gatepass->load([
+            'student.user',
+            'student.department',
+            'staffApprovedBy',
+            'hodApprovedBy',
+            'wardenApprovedBy'
+        ]);
+
+        return view('hod.gatepass.show', compact('gatepass'));
     }
 
     public function approvedGatepasses()
@@ -146,6 +165,19 @@ class HodController extends Controller
         ];
 
         return view('hod.reports', compact('monthlyStats', 'statusStats'));
+    }
+
+    public function downloadReport()
+    {
+        $hod = Auth::user()->hod;
+        
+        $gatepasses = $hod->departmentGatepasses()
+            ->with(['student.user', 'student.department'])
+            ->latest()
+            ->get();
+
+        $pdf = PDF::loadView('hod.reports_pdf', compact('gatepasses'));
+        return $pdf->download('department-gatepass-report.pdf');
     }
 
     public function profile()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gatepass;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ class StudentController extends Controller
 
     public function dashboard()
     {
-        $student = Auth::user()->student;
+        $student = Auth::user()->student->load(['user', 'department']);
         
         $totalGatepasses = $student->gatepasses()->count();
         $pendingGatepasses = $student->pendingGatepasses()->count();
@@ -25,7 +26,7 @@ class StudentController extends Controller
         $rejectedGatepasses = $student->rejectedGatepasses()->count();
 
         $recentGatepasses = $student->gatepasses()
-            ->with(['student', 'student.department'])
+            ->with(['student.user', 'student.department'])
             ->latest()
             ->take(5)
             ->get();
@@ -71,7 +72,7 @@ class StudentController extends Controller
             return back()->with('error', 'You already have an active gatepass for this date.');
         }
 
-        Gatepass::create([
+        $gatepass = Gatepass::create([
             'student_id' => $student->id,
             'gatepass_date' => $request->gatepass_date,
             'out_time' => $request->gatepass_date . ' ' . $request->out_time,
@@ -84,13 +85,27 @@ class StudentController extends Controller
             ->with('success', 'Gatepass request submitted successfully!');
     }
 
-    public function indexGatepasses()
+    public function indexGatepasses(Request $request)
     {
         $student = Auth::user()->student;
-        $gatepasses = $student->gatepasses()
-            ->with(['student.department'])
-            ->latest()
-            ->paginate(10);
+        
+        $query = $student->gatepasses()
+            ->with(['student.user', 'student.department']);
+        
+        // Apply filters if provided
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->filled('date_from')) {
+            $query->whereDate('gatepass_date', '>=', $request->date_from);
+        }
+        
+        if ($request->filled('date_to')) {
+            $query->whereDate('gatepass_date', '<=', $request->date_to);
+        }
+        
+        $gatepasses = $query->latest()->paginate(10);
 
         return view('student.gatepass.index', compact('gatepasses'));
     }
@@ -100,6 +115,15 @@ class StudentController extends Controller
         if ($gatepass->student_id !== Auth::user()->student->id) {
             abort(403);
         }
+
+        // Load all relationships needed for the view
+        $gatepass->load([
+            'student.user',
+            'student.department',
+            'staffApprovedBy',
+            'hodApprovedBy',
+            'wardenApprovedBy'
+        ]);
 
         return view('student.gatepass.show', compact('gatepass'));
     }
@@ -115,16 +139,16 @@ class StudentController extends Controller
 
     private function generatePDF(Gatepass $gatepass)
     {
-        $student = $gatepass->student;
-        $qrCode = $this->generateQRCode($gatepass);
+        // Load all relationships needed for the PDF
+        $gatepass->load([
+            'student.user',
+            'student.department',
+            'staffApprovedBy',
+            'hodApprovedBy',
+            'wardenApprovedBy'
+        ]);
 
-        $data = [
-            'gatepass' => $gatepass,
-            'student' => $student,
-            'qrCode' => $qrCode
-        ];
-
-        $pdf = \PDF::loadView('pdf.gatepass', $data);
+        $pdf = \PDF::loadView('student.gatepass.pdf', compact('gatepass'));
         
         return $pdf->download("gatepass_{$gatepass->id}.pdf");
     }

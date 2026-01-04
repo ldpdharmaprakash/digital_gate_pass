@@ -16,7 +16,7 @@ class WardenController extends Controller
 
     public function dashboard()
     {
-        $warden = Auth::user()->warden;
+        $warden = Auth::user()->warden->load(['user']);
         
         $totalRequests = $warden->pendingGatepasses()->count();
         $approvedToday = $warden->approvedGatepasses()
@@ -35,13 +35,13 @@ class WardenController extends Controller
         ];
 
         $pendingGatepasses = $warden->pendingGatepasses()
-            ->with(['student', 'student.department', 'student.user', 'hodApprovedBy'])
+            ->with(['student.user', 'student.department', 'hodApprovedBy'])
             ->latest()
             ->take(5)
             ->get();
 
         $recentApprovals = $warden->approvedGatepasses()
-            ->with(['student', 'student.department'])
+            ->with(['student.user', 'student.department'])
             ->latest('warden_approved_at')
             ->take(5)
             ->get();
@@ -153,6 +153,25 @@ class WardenController extends Controller
         return view('warden.verification-result', compact('gatepass'));
     }
 
+    public function showGatepass(Gatepass $gatepass)
+    {
+        // Check if gatepass belongs to a hosteller
+        if ($gatepass->student->hosteller !== 'yes') {
+            abort(403);
+        }
+
+        // Load all relationships needed for the view
+        $gatepass->load([
+            'student.user',
+            'student.department',
+            'staffApprovedBy',
+            'hodApprovedBy',
+            'wardenApprovedBy'
+        ]);
+
+        return view('warden.gatepass.show', compact('gatepass'));
+    }
+
     public function reports()
     {
         $warden = Auth::user()->warden;
@@ -172,6 +191,19 @@ class WardenController extends Controller
         ];
 
         return view('warden.reports', compact('monthlyStats', 'statusStats'));
+    }
+
+    public function downloadReport()
+    {
+        $warden = Auth::user()->warden;
+        
+        $gatepasses = $warden->hostellerGatepasses()
+            ->with(['student.user', 'student.department'])
+            ->latest()
+            ->get();
+
+        $pdf = PDF::loadView('warden.reports_pdf', compact('gatepasses'));
+        return $pdf->download('hosteller-gatepass-report.pdf');
     }
 
     public function profile()

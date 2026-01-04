@@ -38,7 +38,7 @@ class AdminController extends Controller
             'rejected_gatepasses' => Gatepass::rejected()->count(),
         ];
 
-        $recentGatepasses = Gatepass::with(['student', 'student.department'])
+        $recentGatepasses = Gatepass::with(['student.user', 'student.department'])
             ->latest()
             ->take(5)
             ->get();
@@ -48,7 +48,7 @@ class AdminController extends Controller
 
     public function users()
     {
-        $users = User::with(['student.department', 'staff.department', 'hod.department'])
+        $users = User::with(['student.department', 'student.user', 'staff.department', 'staff.user', 'hod.department', 'hod.user', 'warden.user'])
             ->latest()
             ->paginate(10);
 
@@ -177,6 +177,16 @@ class AdminController extends Controller
         ];
 
         return view('admin.reports', compact('monthlyStats', 'departmentStats', 'roleStats'));
+    }
+
+    public function downloadReport()
+    {
+        $gatepasses = Gatepass::with(['student.user', 'student.department'])
+            ->latest()
+            ->get();
+
+        $pdf = PDF::loadView('admin.reports_pdf', compact('gatepasses'));
+        return $pdf->download('system-gatepass-report.pdf');
     }
 
     public function exportGatepasses(Request $request)

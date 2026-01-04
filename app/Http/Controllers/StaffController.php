@@ -17,7 +17,7 @@ class StaffController extends Controller
 
     public function dashboard()
     {
-        $staff = Auth::user()->staff;
+        $staff = Auth::user()->staff->load(['user', 'department']);
         
         $totalRequests = $staff->pendingGatepasses()->count();
         $approvedToday = $staff->approvedGatepasses()
@@ -29,13 +29,13 @@ class StaffController extends Controller
             ->count();
 
         $pendingGatepasses = $staff->pendingGatepasses()
-            ->with(['student', 'student.department', 'student.user'])
+            ->with(['student.user', 'student.department'])
             ->latest()
             ->take(5)
             ->get();
 
         $recentApprovals = $staff->approvedGatepasses()
-            ->with(['student', 'student.department'])
+            ->with(['student.user', 'student.department'])
             ->latest('staff_approved_at')
             ->take(5)
             ->get();

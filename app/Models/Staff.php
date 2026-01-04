@@ -36,12 +36,14 @@ class Staff extends Model
 
     public function assignedStudents()
     {
-        return $this->department->students();
+        return $this->hasMany(Student::class, 'department_id', 'department_id');
     }
 
     public function pendingGatepasses()
     {
-        return $this->assignedStudents()->gatepasses()->where('status', 'pending');
+        return Gatepass::whereHas('student', function($query) {
+            $query->where('department_id', $this->department_id);
+        })->where('status', 'pending');
     }
 
     public function approvedGatepasses()
