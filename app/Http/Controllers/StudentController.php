@@ -148,7 +148,15 @@ class StudentController extends Controller
             'wardenApprovedBy'
         ]);
 
-        $pdf = \PDF::loadView('student.gatepass.pdf', compact('gatepass'));
+        // Add watermark to view data
+        $watermarkPath = 'C:/xampp/htdocs/outpass-system/resources/image/download.jpg';
+        $watermarkBase64 = '';
+        
+        if (file_exists($watermarkPath)) {
+            $watermarkBase64 = 'data:image/jpg;base64,' . base64_encode(file_get_contents($watermarkPath));
+        }
+
+        $pdf = \PDF::loadView('student.gatepass.pdf', compact('gatepass', 'watermarkBase64'));
         
         return $pdf->download("gatepass_{$gatepass->id}.pdf");
     }

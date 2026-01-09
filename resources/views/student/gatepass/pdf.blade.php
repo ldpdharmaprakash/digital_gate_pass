@@ -16,7 +16,22 @@
             font-size: 14px;
             line-height: 1.6;
             color: #333;
+            position: relative;
         }
+        
+        @if($watermarkBase64)
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+            width: 250px;
+            height: auto;
+        }
+        @endif
         
         .header {
             text-align: center;
@@ -170,8 +185,10 @@
 </head>
 <body>
     <!-- Watermark for approved gatepasses -->
-    @if($gatepass->isFinalApproved())
-        <div class="watermark">APPROVED</div>
+    @if($watermarkBase64)
+        <div class="watermark">
+            <img src="{{ $watermarkBase64 }}" alt="Watermark" style="width: 100%; height: auto;">
+        </div>
     @endif
 
     <!-- Header -->
