@@ -24,21 +24,24 @@ class AdminController extends Controller
 
     public function dashboard()
     {
+        $collegeId = $this->getCurrentCollegeId();
+        
         $stats = [
-            'total_users' => User::count(),
-            'students' => User::where('role', 'student')->count(),
-            'staff' => User::where('role', 'staff')->count(),
-            'hods' => User::where('role', 'hod')->count(),
-            'wardens' => User::where('role', 'warden')->count(),
-            'admins' => User::where('role', 'admin')->count(),
-            'departments' => Department::count(),
-            'total_gatepasses' => Gatepass::count(),
-            'pending_gatepasses' => Gatepass::pending()->count(),
-            'approved_gatepasses' => Gatepass::finalApproved()->count(),
-            'rejected_gatepasses' => Gatepass::rejected()->count(),
+            'total_users' => User::where('college_id', $collegeId)->count(),
+            'students' => User::where('college_id', $collegeId)->where('role', 'student')->count(),
+            'staff' => User::where('college_id', $collegeId)->where('role', 'staff')->count(),
+            'hods' => User::where('college_id', $collegeId)->where('role', 'hod')->count(),
+            'wardens' => User::where('college_id', $collegeId)->where('role', 'warden')->count(),
+            'admins' => User::where('college_id', $collegeId)->where('role', 'admin')->count(),
+            'departments' => Department::where('college_id', $collegeId)->count(),
+            'total_gatepasses' => Gatepass::where('college_id', $collegeId)->count(),
+            'pending_gatepasses' => Gatepass::where('college_id', $collegeId)->pending()->count(),
+            'approved_gatepasses' => Gatepass::where('college_id', $collegeId)->finalApproved()->count(),
+            'rejected_gatepasses' => Gatepass::where('college_id', $collegeId)->rejected()->count(),
         ];
 
-        $recentGatepasses = Gatepass::with(['student.user', 'student.department'])
+        $recentGatepasses = Gatepass::where('college_id', $collegeId)
+            ->with(['student.user', 'student.department'])
             ->latest()
             ->take(5)
             ->get();

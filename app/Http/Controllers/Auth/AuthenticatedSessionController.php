@@ -29,6 +29,15 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Set college theme in session after successful login
+        $user = Auth::user();
+        if ($user && $user->college) {
+            $request->session()->put('theme_primary', $user->college->primary_color);
+            $request->session()->put('theme_secondary', $user->college->secondary_color);
+            $request->session()->put('college_name', $user->college->name);
+            $request->session()->put('college_code', $user->college->code);
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 

@@ -20,27 +20,31 @@ class WardenController extends Controller
         
         $totalRequests = $warden->pendingGatepasses()->count();
         $approvedToday = $warden->approvedGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->whereDate('warden_approved_at', today())
             ->count();
         $rejectedToday = Gatepass::where('warden_approved_by', Auth::id())
+            ->where('college_id', $this->getCurrentCollegeId())
             ->whereIn('status', ['warden_rejected'])
             ->whereDate('updated_at', today())
             ->count();
 
         $hostellerStats = [
-            'total' => $warden->hostellerGatepasses()->count(),
-            'pending' => $warden->hostellerGatepasses()->pending()->count(),
-            'approved' => $warden->hostellerGatepasses()->finalApproved()->count(),
-            'rejected' => $warden->hostellerGatepasses()->rejected()->count(),
+            'total' => $warden->hostellerGatepasses()->where('college_id', $this->getCurrentCollegeId())->count(),
+            'pending' => $warden->hostellerGatepasses()->where('college_id', $this->getCurrentCollegeId())->pending()->count(),
+            'approved' => $warden->hostellerGatepasses()->where('college_id', $this->getCurrentCollegeId())->finalApproved()->count(),
+            'rejected' => $warden->hostellerGatepasses()->where('college_id', $this->getCurrentCollegeId())->rejected()->count(),
         ];
 
         $pendingGatepasses = $warden->pendingGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->with(['student.user', 'student.department', 'hodApprovedBy'])
             ->latest()
             ->take(5)
             ->get();
 
         $recentApprovals = $warden->approvedGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->with(['student.user', 'student.department'])
             ->latest('warden_approved_at')
             ->take(5)

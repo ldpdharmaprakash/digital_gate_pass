@@ -21,20 +21,24 @@ class StaffController extends Controller
         
         $totalRequests = $staff->pendingGatepasses()->count();
         $approvedToday = $staff->approvedGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->whereDate('staff_approved_at', today())
             ->count();
         $rejectedToday = Gatepass::where('staff_approved_by', Auth::id())
+            ->where('college_id', $this->getCurrentCollegeId())
             ->whereIn('status', ['staff_rejected'])
             ->whereDate('updated_at', today())
             ->count();
 
         $pendingGatepasses = $staff->pendingGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->with(['student.user', 'student.department'])
             ->latest()
             ->take(5)
             ->get();
 
         $recentApprovals = $staff->approvedGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->with(['student.user', 'student.department'])
             ->latest('staff_approved_at')
             ->take(5)

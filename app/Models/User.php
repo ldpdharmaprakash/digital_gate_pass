@@ -25,6 +25,9 @@ class User extends Authenticatable
         'role',
         'phone',
         'is_active',
+        'college_id',
+        'gender',
+        'institute_id',
     ];
 
     /**
@@ -47,6 +50,11 @@ class User extends Authenticatable
         'password' => 'hashed',
         'is_active' => 'boolean',
     ];
+
+    public function college()
+    {
+        return $this->belongsTo(College::class);
+    }
 
     public function student()
     {

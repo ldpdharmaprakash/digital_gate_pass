@@ -11,6 +11,21 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- Dynamic Theme Styles -->
+        <style>
+            :root {
+                --primary-color: {{ session('theme_primary', '#3B82F6') }};
+                --secondary-color: {{ session('theme_secondary', '#8B5CF6') }};
+            }
+            
+            .bg-primary { background-color: var(--primary-color); }
+            .text-primary { color: var(--primary-color); }
+            .border-primary { border-color: var(--primary-color); }
+            .bg-secondary { background-color: var(--secondary-color); }
+            .text-secondary { color: var(--secondary-color); }
+            .border-secondary { border-color: var(--secondary-color); }
+        </style>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>

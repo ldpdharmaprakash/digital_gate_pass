@@ -11,6 +11,7 @@ class Gatepass extends Model
 
     protected $fillable = [
         'student_id',
+        'college_id',
         'gatepass_date',
         'out_time',
         'in_time',
@@ -40,6 +41,11 @@ class Gatepass extends Model
         'final_approved_at' => 'datetime',
         'is_active' => 'boolean',
     ];
+
+    public function college()
+    {
+        return $this->belongsTo(College::class);
+    }
 
     public function student()
     {

@@ -64,6 +64,7 @@ class StudentController extends Controller
         $student = Auth::user()->student;
 
         $existingGatepass = Gatepass::where('student_id', $student->id)
+            ->where('college_id', $this->getCurrentCollegeId())
             ->where('gatepass_date', $request->gatepass_date)
             ->whereIn('status', ['pending', 'staff_approved', 'hod_approved', 'final_approved'])
             ->first();
@@ -74,6 +75,7 @@ class StudentController extends Controller
 
         $gatepass = Gatepass::create([
             'student_id' => $student->id,
+            'college_id' => $this->getCurrentCollegeId(),
             'gatepass_date' => $request->gatepass_date,
             'out_time' => $request->gatepass_date . ' ' . $request->out_time,
             'in_time' => $request->gatepass_date . ' ' . $request->in_time,

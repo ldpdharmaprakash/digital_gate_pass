@@ -20,27 +20,31 @@ class HodController extends Controller
         
         $totalRequests = $hod->pendingGatepasses()->count();
         $approvedToday = $hod->approvedGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->whereDate('hod_approved_at', today())
             ->count();
         $rejectedToday = Gatepass::where('hod_approved_by', Auth::id())
+            ->where('college_id', $this->getCurrentCollegeId())
             ->whereIn('status', ['hod_rejected'])
             ->whereDate('updated_at', today())
             ->count();
 
         $departmentStats = [
-            'total' => $hod->departmentGatepasses()->count(),
-            'pending' => $hod->departmentGatepasses()->pending()->count(),
-            'approved' => $hod->departmentGatepasses()->finalApproved()->count(),
-            'rejected' => $hod->departmentGatepasses()->rejected()->count(),
+            'total' => $hod->departmentGatepasses()->where('college_id', $this->getCurrentCollegeId())->count(),
+            'pending' => $hod->departmentGatepasses()->where('college_id', $this->getCurrentCollegeId())->pending()->count(),
+            'approved' => $hod->departmentGatepasses()->where('college_id', $this->getCurrentCollegeId())->finalApproved()->count(),
+            'rejected' => $hod->departmentGatepasses()->where('college_id', $this->getCurrentCollegeId())->rejected()->count(),
         ];
 
         $pendingGatepasses = $hod->pendingGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->with(['student.user', 'student.department', 'staffApprovedBy'])
             ->latest()
             ->take(5)
             ->get();
 
         $recentApprovals = $hod->approvedGatepasses()
+            ->where('college_id', $this->getCurrentCollegeId())
             ->with(['student.user', 'student.department'])
             ->latest('hod_approved_at')
             ->take(5)

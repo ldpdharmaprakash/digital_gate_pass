@@ -15,11 +15,17 @@ class Department extends Model
         'description',
         'head_name',
         'is_active',
+        'college_id',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function college()
+    {
+        return $this->belongsTo(College::class);
+    }
 
     public function students()
     {
