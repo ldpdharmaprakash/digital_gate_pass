@@ -10,7 +10,7 @@
             <h1 class="text-3xl font-bold text-gray-900">My Gatepasses</h1>
             <p class="text-gray-600 mt-2">View and track all your gatepass requests</p>
         </div>
-        <a href="{{ route('student.gatepasses.create') }}" class="btn-primary px-6 py-3 text-white rounded-lg flex items-center">
+        <a href="{{ route('student.gatepasses.create') }}" class="btn-primary-theme px-6 py-3 text-white rounded-lg flex items-center">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -23,7 +23,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select x-model="filters.status" @change="applyFilters()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select x-model="filters.status" @change="applyFilters()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus-theme">
                     <option value="">All Status</option>
                     <option value="pending">Pending</option>
                     <option value="staff_approved">Staff Approved</option>
@@ -34,11 +34,11 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Date From</label>
-                <input type="date" x-model="filters.date_from" @change="applyFilters()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="date" x-model="filters.date_from" @change="applyFilters()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus-theme">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Date To</label>
-                <input type="date" x-model="filters.date_to" @change="applyFilters()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="date" x-model="filters.date_to" @change="applyFilters()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus-theme">
             </div>
             <div class="flex items-end">
                 <button @click="resetFilters()" class="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
@@ -147,7 +147,7 @@
                                 </svg>
                                 <h3 class="text-sm font-medium text-gray-900 mb-2">No gatepass requests found</h3>
                                 <p class="text-sm text-gray-500 mb-4">Get started by creating your first gatepass request.</p>
-                                <a href="{{ route('student.gatepasses.create') }}" class="btn-primary px-4 py-2 text-white rounded-lg text-sm">
+                                <a href="{{ route('student.gatepasses.create') }}" class="btn-primary-theme px-4 py-2 text-white rounded-lg text-sm">
                                     Create New Request
                                 </a>
                             </td>

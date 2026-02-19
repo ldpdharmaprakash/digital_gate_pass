@@ -7,64 +7,65 @@ class CollegeTheme
     public static function getTheme($college = 'engineering')
     {
         $themes = [
-'admin' => [
+            
+            'admin' => [
 
-    /* ================= CORE IDENTITY ================= */
-    'primary' => '#2563eb',          // Strong institutional blue
-    'primary_hover' => '#1d4ed8',
-    'secondary' => '#4f46e5',        // Indigo accent
-    'accent' => '#6366f1',
+                /* ================= CORE IDENTITY ================= */
+                'primary' => '#2563eb',          // Strong institutional blue
+                'primary_hover' => '#1d4ed8',
+                'secondary' => '#4f46e5',        // Indigo accent
+                'accent' => '#6366f1',
 
-    /* ================= SIDEBAR (MAIN BRAND) ================= */
-    'sidebar_bg' => 'linear-gradient(200deg, #f5f5f5ff 0%, #8791ffff 100%, #985ef6ff 100%)',
-    'sidebar_active' => '#3b82f6',
-    'sidebar_hover' => 'rgba(255,255,255,0.08)',
-    'sidebar_text' => '#ffffff',
-    'sidebar_icon' => '#e0e7ff',
+                /* ================= SIDEBAR (MAIN BRAND) ================= */
+                'sidebar_bg' => 'linear-gradient(200deg, #f5f5f5ff 0%, #8791ffff 100%, #985ef6ff 100%)',
+                'sidebar_active' => '#3b82f6',
+                'sidebar_hover' => 'rgba(255,255,255,0.08)',
+                'sidebar_text' => '#ffffff',
+                'sidebar_icon' => '#e0e7ff',
 
-    /* ================= HEADER ================= */
-    'header_bg' => '#ffffff',
-    'header_border' => '#e5e7eb',
-    'header_text' => '#1f2937',
-    'header_accent' => '#2563eb',
+                /* ================= HEADER ================= */
+                'header_bg' => '#ffffff',
+                'header_border' => '#e5e7eb',
+                'header_text' => '#1f2937',
+                'header_accent' => '#2563eb',
 
-    /* ================= BUTTONS ================= */
-    'btn_primary' => '#2563eb',
-    'btn_primary_hover' => '#1d4ed8',
-    'btn_primary_focus' => 'rgba(37,99,235,0.25)',
-    'btn_secondary' => '#64748b',
-    'btn_secondary_hover' => '#475569',
+                /* ================= BUTTONS ================= */
+                'btn_primary' => '#2563eb',
+                'btn_primary_hover' => '#1d4ed8',
+                'btn_primary_focus' => 'rgba(37,99,235,0.25)',
+                'btn_secondary' => '#64748b',
+                'btn_secondary_hover' => '#475569',
 
-    /* ================= CARDS ================= */
-    'card_bg' => '#ffffff',
-    'card_border' => '#e5e7eb',
-    'card_accent' => '#2563eb',
-    'card_shadow' => 'rgba(37,99,235,0.08)',
-    'card_hover_shadow' => 'rgba(37,99,235,0.18)',
+                /* ================= CARDS ================= */
+                'card_bg' => '#ffffff',
+                'card_border' => '#e5e7eb',
+                'card_accent' => '#2563eb',
+                'card_shadow' => 'rgba(37,99,235,0.08)',
+                'card_hover_shadow' => 'rgba(37,99,235,0.18)',
 
-    /* ================= PAGE BACKGROUND ================= */
-    'page_bg' => '#f8fafc',
-    'page_tint' => 'rgba(37,99,235,0.03)',
+                /* ================= PAGE BACKGROUND ================= */
+                'page_bg' => '#f8fafc',
+                'page_tint' => 'rgba(37,99,235,0.03)',
 
-    /* ================= STATUS ================= */
-    'status_pending' => '#f59e0b',
-    'status_approved' => '#10b981',
-    'status_rejected' => '#ef4444',
+                /* ================= STATUS ================= */
+                'status_pending' => '#f59e0b',
+                'status_approved' => '#10b981',
+                'status_rejected' => '#ef4444',
 
-    /* ================= LOGIN ================= */
-    'login_gradient_start' => '#1e3a8a',
-    'login_gradient_end' => '#4f46e5',
-    'login_card_glow' => 'rgba(79,70,229,0.25)',
+                /* ================= LOGIN ================= */
+                'login_gradient_start' => '#1e3a8a',
+                'login_gradient_end' => '#4f46e5',
+                'login_card_glow' => 'rgba(79,70,229,0.25)',
 
-    /* ================= SHADOW SYSTEM ================= */
-    'shadow_color' => 'rgba(37,99,235,0.10)',
-    'shadow_strong' => 'rgba(37,99,235,0.20)',
+                /* ================= SHADOW SYSTEM ================= */
+                'shadow_color' => 'rgba(37,99,235,0.10)',
+                'shadow_strong' => 'rgba(37,99,235,0.20)',
 
-    /* ================= TEXT ================= */
-    'text_primary' => '#1f2937',
-    'text_secondary' => '#64748b',
-    'text_muted' => '#94a3b8',
-],
+                /* ================= TEXT ================= */
+                'text_primary' => '#1f2937',
+                'text_secondary' => '#64748b',
+                'text_muted' => '#94a3b8',
+            ],
 
             'warden' => [
                 // Core Identity Colors
@@ -201,63 +202,63 @@ class CollegeTheme
                 'text_muted' => '#9ca3af',
             ],
 
-'engineering' => [
-    // Core Identity Colors (Saffron Academic Identity)
-    'primary' => '#f59e0b',           // saffron yellow
-    'primary_hover' => '#d97706',     // deep saffron
-    'secondary' => '#fde68a',         // soft yellow
-    'accent' => '#fbbf24',            // warm saffron accent
-    
-    // Sidebar (Campus Identity)
-    'sidebar_bg' => 'linear-gradient(180deg, #fff7ed 0%, #fbbf24 100%)',
-    'sidebar_active' => '#d97706',
-    'sidebar_hover' => 'rgba(217, 119, 6, 0.12)',
-    'sidebar_text' => '#ffffff',
-    'sidebar_icon' => '#ffffff',
-    
-    // Header (Clean Academic)
-    'header_bg' => '#ffffff',
-    'header_border' => '#fde68a',
-    'header_text' => '#1f2937',
-    'header_accent' => '#f59e0b',
-    
-    // Buttons (Warm Interaction)
-    'btn_primary' => '#f59e0b',
-    'btn_primary_hover' => '#d97706',
-    'btn_primary_focus' => 'rgba(245, 158, 11, 0.25)',
-    'btn_secondary' => '#6b7280',
-    'btn_secondary_hover' => '#4b5563',
-    
-    // Cards (Soft Modern)
-    'card_bg' => '#ffffff',
-    'card_border' => '#fde68a',
-    'card_accent' => '#f59e0b',
-    'card_shadow' => 'rgba(245, 158, 11, 0.10)',
-    'card_hover_shadow' => 'rgba(245, 158, 11, 0.18)',
-    
-    // Background (Light Campus Mood)
-    'page_bg' => '#fffbeb',
-    'page_tint' => 'rgba(245, 158, 11, 0.03)',
-    
-    // Status Badges
-    'status_pending' => '#f59e0b',
-    'status_approved' => '#10b981',
-    'status_rejected' => '#ef4444',
-    
-    // Login Page (Warm Gradient)
-    'login_gradient_start' => '#f59e0b',
-    'login_gradient_end' => '#fde68a',
-    'login_card_glow' => 'rgba(245, 158, 11, 0.25)',
-    
-    // Shadows (Glow saffron)
-    'shadow_color' => 'rgba(245, 158, 11, 0.10)',
-    'shadow_strong' => 'rgba(245, 158, 11, 0.22)',
-    
-    // Text Colors
-    'text_primary' => '#1f2937',
-    'text_secondary' => '#6b7280',
-    'text_muted' => '#9ca3af',
-],
+            'engineering' => [
+                // Core Identity Colors (Saffron Academic Identity)
+                'primary' => '#f59e0b',           // saffron yellow
+                'primary_hover' => '#d97706',     // deep saffron
+                'secondary' => '#fde68a',         // soft yellow
+                'accent' => '#fbbf24',            // warm saffron accent
+                
+                // Sidebar (Campus Identity)
+                'sidebar_bg' => 'linear-gradient(180deg, #fff7ed 0%, #fbbf24 100%)',
+                'sidebar_active' => '#d97706',
+                'sidebar_hover' => 'rgba(217, 119, 6, 0.12)',
+                'sidebar_text' => '#ffffff',
+                'sidebar_icon' => '#ffffff',
+                
+                // Header (Clean Academic)
+                'header_bg' => '#ffffff',
+                'header_border' => '#fde68a',
+                'header_text' => '#1f2937',
+                'header_accent' => '#f59e0b',
+                
+                // Buttons (Warm Interaction)
+                'btn_primary' => '#f59e0b',
+                'btn_primary_hover' => '#d97706',
+                'btn_primary_focus' => 'rgba(245, 158, 11, 0.25)',
+                'btn_secondary' => '#6b7280',
+                'btn_secondary_hover' => '#4b5563',
+                
+                // Cards (Soft Modern)
+                'card_bg' => '#ffffff',
+                'card_border' => '#fde68a',
+                'card_accent' => '#f59e0b',
+                'card_shadow' => 'rgba(245, 158, 11, 0.10)',
+                'card_hover_shadow' => 'rgba(245, 158, 11, 0.18)',
+                
+                // Background (Light Campus Mood)
+                'page_bg' => '#fffbeb',
+                'page_tint' => 'rgba(245, 158, 11, 0.03)',
+                
+                // Status Badges
+                'status_pending' => '#f59e0b',
+                'status_approved' => '#10b981',
+                'status_rejected' => '#ef4444',
+                
+                // Login Page (Warm Gradient)
+                'login_gradient_start' => '#f59e0b',
+                'login_gradient_end' => '#fde68a',
+                'login_card_glow' => 'rgba(245, 158, 11, 0.25)',
+                
+                // Shadows (Glow saffron)
+                'shadow_color' => 'rgba(245, 158, 11, 0.10)',
+                'shadow_strong' => 'rgba(245, 158, 11, 0.22)',
+                
+                // Text Colors
+                'text_primary' => '#1f2937',
+                'text_secondary' => '#6b7280',
+                'text_muted' => '#9ca3af',
+            ],
 
             'arts' => [
                 // Core Identity Colors (Neon Green Identity)

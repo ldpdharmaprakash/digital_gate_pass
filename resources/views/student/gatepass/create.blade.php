@@ -90,7 +90,7 @@
                                 name="gatepass_date" 
                                 required
                                 min="{{ now()->format('Y-m-d') }}"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus-theme transition-colors"
                                 x-model="formData.gatepass_date"
                                 @change="validateDate()"
                             >
@@ -107,7 +107,7 @@
                                 id="out_time" 
                                 name="out_time" 
                                 required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus-theme transition-colors"
                                 x-model="formData.out_time"
                             >
                         </div>
@@ -122,7 +122,7 @@
                                 id="in_time" 
                                 name="in_time" 
                                 required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus-theme transition-colors"
                                 x-model="formData.in_time"
                             >
                             <p class="mt-1 text-sm text-gray-500">Must be after out time</p>
@@ -140,7 +140,7 @@
                                 required
                                 maxlength="500"
                                 placeholder="Please provide a detailed reason for your gatepass request..."
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus-theme transition-colors resize-none"
                                 x-model="formData.reason"
                             ></textarea>
                             <p class="mt-1 text-sm text-gray-500">
@@ -151,7 +151,7 @@
 
                     <!-- Form Actions -->
                     <div class="mt-8 flex items-center justify-between">
-                        <a href="{{ route('student.gatepasses.index') }}" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        <a href="{{ route('student.gatepasses.index') }}" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors btn-secondary-theme">
                             Cancel
                         </a>
                         <!-- <button 
@@ -178,12 +178,11 @@
         text-sm font-semibold tracking-wide
         text-white
         rounded-lg
-        bg-gradient-to-r from-indigo-600 to-blue-600
+        btn-primary-theme
         shadow-md
         transition-all duration-300 ease-in-out
-        hover:from-indigo-700 hover:to-blue-700
         hover:shadow-lg
-        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+        focus:outline-none focus:ring-2 focus:ring-offset-2
         disabled:opacity-60 disabled:cursor-not-allowed
     "
     :class="{ 'opacity-60 cursor-not-allowed': submitting }"
