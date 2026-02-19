@@ -24,6 +24,11 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::get('/set-college', function () {
+    session(['college' => request('college')]);
+    return back();
+});
+
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');

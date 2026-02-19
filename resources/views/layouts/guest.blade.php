@@ -14,13 +14,23 @@
         <!-- Font Awesome for icons -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+        @php
+        use App\Support\CollegeTheme;
+        $college = session('college', 'engineering');
+        $theme = CollegeTheme::getTheme($college);
+        @endphp
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         
         <style>
             body {
                 font-family: 'Inter', sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(
+                    135deg,
+                    {{ $theme['login_gradient_start'] }},
+                    {{ $theme['login_gradient_end'] }}
+                );
                 min-height: 100vh;
             }
             
@@ -32,14 +42,18 @@
             }
             
             .logo-container {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(
+                    135deg,
+                    {{ $theme['login_gradient_start'] }},
+                    {{ $theme['login_gradient_end'] }}
+                );
                 border-radius: 50%;
                 width: 80px;
                 height: 80px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
                 transition: transform 0.3s ease;
             }
             
@@ -151,7 +165,7 @@
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md px-8 py-8 login-container rounded-2xl">
+            <div class="w-full sm:max-w-md px-8 py-8 login-container rounded-2xl shadow-2xl">
                 {{ $slot }}
             </div>
             

@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 relative" style="z-index: 9995;">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -20,6 +20,30 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- College Selection Dropdown -->
+                <div class="nav-dropdown-wrapper relative mr-4">
+                    <form method="GET" action="/set-college">
+                        <div class="college-dropdown-wrapper">
+                            <select name="college"
+                                onchange="this.form.submit()"
+                                class="college-dropdown appearance-none rounded-xl text-sm px-6 py-3 pr-12 transition-all duration-300 cursor-pointer"
+                                style="min-width: 200px; position: relative; z-index: 10000;">
+                                <option value="engineering" {{ session('college')=='engineering'?'selected':'' }}>🔧 Engineering College</option>
+                                <option value="arts" {{ session('college')=='arts'?'selected':'' }}>🎨 Arts & Science</option>
+                                <option value="polytechnic" {{ session('college')=='polytechnic'?'selected':'' }}>⚙️ Polytechnic Institute</option>
+                            </select>
+                        </div>
+                        <!-- Enhanced Dropdown Arrow -->
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none" style="z-index: 10001;">
+                            <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
