@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Login Test</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 10px 5px; }
+        .button:hover { background: #0056b3; }
+        #qr-reader { width: 300px; height: 300px; border: 2px solid #ddd; border-radius: 8px; margin: 10px 0; }
+        .hidden { display: none; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 4px; background: #e3f2fd; color: #1e40af; }
+    </style>
+</head>
+<body>
+    <h1>QR Login Direct Test</h1>
+    
+    <div class="test-section">
+        <h2>1. HTML5 QR Code Library Test</h2>
+        <button onclick="testLibrary()" class="button">Test HTML5 QR Code Library</button>
+        <div id="library-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. QR Scanner Test</h2>
+        <button onclick="startTestScanner()" class="button">Start QR Scanner</button>
+        <button onclick="stopTestScanner()" class="button">Stop QR Scanner</button>
+        <div id="qr-reader"></div>
+        <div id="scanner-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. File Upload Test</h2>
+        <input type="file" id="file-input" accept="image/*" onchange="testFileUpload(event)">
+        <div id="file-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. QR Login URL Test</h2>
+        <button onclick="testQRLogin()" class="button">Test QR Login Redirect</button>
+        <div id="login-result"></div>
+    </div>
+    
+    <div class="status">
+        <h3>Current Status:</h3>
+        <div id="status-log"></div>
+    </div>
+
+    <script>
+        let html5QrCode = null;
+        let isScanning = false;
+
+        function updateStatus(message) {
+            document.getElementById('status-log').innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+
+        function showResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<div class="result ' + (isSuccess ? 'success' : 'error') + '">' + message + '</div>';
+        }
+
+        function testLibrary() {
+            try {
+                if (typeof Html5Qrcode !== 'undefined') {
+                    showResult('library-result', '✅ HTML5 QR Code library loaded successfully!', true);
+                    updateStatus('Library available');
+                } else {
+                    showResult('library-result', '❌ HTML5 QR Code library not found', false);
+                    updateStatus('Library NOT available');
+                }
+            } catch (error) {
+                showResult('library-result', '❌ Error testing library: ' + error.message, false);
+                updateStatus('Library test error: ' + error.message);
+            }
+        }
+
+        function startTestScanner() {
+            if (isScanning) {
+                updateStatus('Scanner already running');
+                return;
+            }
+
+            try {
+                const qrReader = document.getElementById('qr-reader');
+                qrReader.innerHTML = '<div style="text-align: center; padding: 50px;">📷 Starting scanner...</div>';
+                
+                html5QrCode = new Html5Qrcode("qr-reader");
+                
+                Html5Qrcode.getCameras().then(devices => {
+                    if (devices && devices.length > 0) {
+                        html5QrCode.start(
+                            devices[0].id,
+                            { fps: 10, qrbox: { width: 250, height: 250 } },
+                            (decodedText, decodedResult) => {
+                                showResult('scanner-result', '✅ QR Code detected: ' + decodedText, true);
+                                updateStatus('QR Code detected: ' + decodedText);
+                                stopTestScanner();
+                            },
+                            (errorMessage) => {
+                                showResult('scanner-result', '⚠️ Scan error: ' + errorMessage, false);
+                                updateStatus('Scan error: ' + errorMessage);
+                            }
+                        ).then(() => {
+                            isScanning = true;
+                            updateStatus('Scanner started successfully');
+                            qrReader.innerHTML = '<div style="text-align: center; padding: 20px;">📷 Scanning...</div>';
+                        }).catch(err => {
+                            showResult('scanner-result', '❌ Failed to start scanner: ' + err, false);
+                            updateStatus('Scanner start failed: ' + err);
+                        });
+                    } else {
+                        showResult('scanner-result', '❌ No cameras found', false);
+                        updateStatus('No cameras found');
+                    }
+                }).catch(err => {
+                    showResult('scanner-result', '❌ Error getting cameras: ' + err, false);
+                    updateStatus('Camera error: ' + err);
+                });
+            } catch (error) {
+                showResult('scanner-result', '❌ Error starting scanner: ' + error.message, false);
+                updateStatus('Scanner error: ' + error.message);
+            }
+        }
+
+        function stopTestScanner() {
+            if (!isScanning || !html5QrCode) {
+                updateStatus('Scanner not running');
+                return;
+            }
+
+            try {
+                html5QrCode.stop().then(() => {
+                    isScanning = false;
+                    updateStatus('Scanner stopped successfully');
+                    const qrReader = document.getElementById('qr-reader');
+                    qrReader.innerHTML = '<div style="text-align: center; padding: 50px;">⏹️ Scanner stopped</div>';
+                }).catch(err => {
+                    showResult('scanner-result', '❌ Error stopping scanner: ' + err, false);
+                    updateStatus('Scanner stop error: ' + err);
+                });
+            } catch (error) {
+                showResult('scanner-result', '❌ Error stopping scanner: ' + error.message, false);
+                updateStatus('Scanner stop error: ' + error.message);
+            }
+        }
+
+        function testFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                showResult('file-result', '⚠️ No file selected', false);
+                return;
+            }
+
+            try {
+                updateStatus('Processing file: ' + file.name);
+                
+                const html5QrCode = new Html5Qrcode("qr-reader");
+                
+                html5QrCode.scanFile(file, true)
+                    .then(decodedText => {
+                        showResult('file-result', '✅ QR Code from file: ' + decodedText, true);
+                        updateStatus('File QR detected: ' + decodedText);
+                    })
+                    .catch(err => {
+                        showResult('file-result', '❌ Error scanning file: ' + err, false);
+                        updateStatus('File scan error: ' + err);
+                    });
+            } catch (error) {
+                showResult('file-result', '❌ Error processing file: ' + error.message, false);
+                updateStatus('File processing error: ' + error.message);
+            }
+        }
+
+        function testQRLogin() {
+            const testToken = 'ca3048d1-d99c-4054-825a-1fc41fcfa992';
+            const qrLoginUrl = 'http://localhost/auth/qr/' + testToken;
+            
+            showResult('login-result', '🔗 Testing QR login URL: ' + qrLoginUrl, true);
+            updateStatus('QR login URL test: ' + qrLoginUrl);
+            
+            if (qrLoginUrl.includes('/auth/qr/')) {
+                showResult('login-result', '✅ QR login URL format is correct', true);
+                updateStatus('QR login URL format correct');
+            } else {
+                showResult('login-result', '❌ QR login URL format is incorrect', false);
+                updateStatus('QR login URL format incorrect');
+            }
+        }
+
+        // Auto-test library on page load
+        window.onload = function() {
+            updateStatus('Page loaded, testing library...');
+            testLibrary();
+        };
+    </script>
+</body>
+</html>

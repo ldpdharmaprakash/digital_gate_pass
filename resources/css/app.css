@@ -1,3 +1,207 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* QR Login Specific Styles */
+.tab-button {
+    transition: all 0.3s ease;
+}
+
+.tab-button.active {
+    border-bottom-color: #4f46e5;
+    color: #4f46e5;
+}
+
+.tab-content {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#qr-reader {
+    border: 2px dashed #d1d5db;
+    border-radius: 0.5rem;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+    position: relative;
+    overflow: hidden;
+}
+
+#qr-reader::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 250px;
+    border: 2px solid #4f46e5;
+    border-radius: 0.5rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#qr-reader video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+
+#dropZone {
+    transition: all 0.3s ease;
+}
+
+#dropZone:hover {
+    border-color: #4f46e5;
+    background-color: #f0f9ff;
+}
+
+#dropZone.dragover {
+    border-color: #4f46e5;
+    background-color: #dbeafe;
+    transform: scale(1.02);
+}
+
+/* QR Scanner Status Animations */
+#scanStatus {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+#scanResult {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Button hover effects */
+button:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+}
+
+button:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:not(:disabled):active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* QR Code Image Styling */
+.qr-code-container {
+    position: relative;
+    display: inline-block;
+}
+
+.qr-code-container::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: linear-gradient(45deg, #4f46e5, #7c3aed);
+    border-radius: 0.75rem;
+    z-index: -1;
+    opacity: 0.1;
+}
+
+/* Notification animations */
+.notification-enter {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.notification-exit {
+    animation: slideOutRight 0.3s ease-in;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    #qr-reader {
+        min-height: 200px;
+    }
+    
+    #qr-reader::before {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .tab-button {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Dark mode support for QR components */
+@media (prefers-color-scheme: dark) {
+    #qr-reader {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    
+    #dropZone {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f3f4f6;
+    }
+    
+    #dropZone:hover {
+        background: #1e3a8a;
+        border-color: #4f46e5;
+    }
+}

@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\QRVerificationController;
+use App\Http\Controllers\QRAuthController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\HodController;
 use App\Http\Controllers\WardenController;
@@ -91,6 +93,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::get('/reports/download', [AdminController::class, 'downloadReport'])->name('reports.download');
     Route::post('/export/gatepasses', [AdminController::class, 'exportGatepasses'])->name('export.gatepasses');
+});
+
+// QR Verification Routes (Public - for scanning)
+Route::get('/qr/verify/{id}', [QRVerificationController::class, 'verify'])->name('qr.verify');
+Route::post('/qr/verify', [QRVerificationController::class, 'verifyApi'])->name('qr.verify.api');
+
+// QR Authentication Routes (Public - for QR login)
+Route::get('/auth/qr/{token}', [QRAuthController::class, 'qrLogin'])->name('qr.login');
+Route::get('/qr-image/{token}', [QRAuthController::class, 'generateQRImage'])->name('qr.image');
+
+// QR Management Routes (Auth required)
+Route::middleware('auth')->prefix('qr')->name('qr.')->group(function () {
+    Route::get('/my-qr', [QRAuthController::class, 'showMyQR'])->name('my-qr');
+    Route::post('/regenerate', [QRAuthController::class, 'regenerateQR'])->name('regenerate');
 });
 
 Route::middleware('auth')->group(function () {

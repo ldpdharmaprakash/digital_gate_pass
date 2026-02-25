@@ -28,6 +28,8 @@ class User extends Authenticatable
         'college_id',
         'gender',
         'institute_id',
+        'qr_token',
+        'qr_token_generated_at',
     ];
 
     /**
@@ -38,6 +40,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'qr_token',
     ];
 
     /**
@@ -49,6 +52,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean',
+        'qr_token_generated_at' => 'datetime',
     ];
 
     public function college()
@@ -114,5 +118,55 @@ class User extends Authenticatable
     public function gatepassesApprovedByWarden()
     {
         return $this->hasMany(Gatepass::class, 'warden_approved_by');
+    }
+
+    /**
+     * Generate QR token for user
+     */
+    public function generateQRToken()
+    {
+        $this->qr_token = (string) \Illuminate\Support\Str::uuid();
+        $this->qr_token_generated_at = now();
+        $this->save();
+        
+        return $this->qr_token;
+    }
+
+    /**
+     * Get QR login URL for user
+     */
+    public function getQRLoginUrl()
+    {
+        if (!$this->qr_token) {
+            $this->generateQRToken();
+        }
+        
+        return url('/auth/qr/' . $this->qr_token);
+    }
+
+    /**
+     * Get QR token or generate if missing
+     */
+    public function getQRToken()
+    {
+        if (!$this->qr_token) {
+            $this->generateQRToken();
+        }
+        
+        return $this->qr_token;
+    }
+
+    /**
+     * Boot method to auto-generate QR token on user creation
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($user) {
+            if (!$user->qr_token) {
+                $user->generateQRToken();
+            }
+        });
     }
 }

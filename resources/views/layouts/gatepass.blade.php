@@ -583,13 +583,13 @@
                             </a>
                             
                             @if(auth()->user()->isStudent())
-                                <a href="{{ route('student.gatepasses.index') }}" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('student.gatepasses.*') ? 'bg-theme text-white' : 'text-gray-700 hover:bg-gray-100' }}">
+                                <a href="{{ route('student.gatepasses.index') }}" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('student.gatepasses.index') ? 'bg-theme text-white' : 'text-gray-700 hover:bg-gray-100' }}">
                                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
                                     <span class="text-sm-responsive">My Gatepasses</span>
                                 </a>
-                                <a href="{{ route('student.gatepasses.create') }}" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                                <a href="{{ route('student.gatepasses.create') }}" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('student.gatepasses.create') ? 'bg-theme text-white' : 'text-gray-700 hover:bg-gray-100' }}">
                                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
@@ -671,6 +671,13 @@
                         </div>
                         
                         <div class="mt-8 pt-8 border-t border-gray-200">
+                            <a href="{{ route('qr.my-qr') }}" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('qr.*') ? 'bg-theme text-white' : 'text-gray-700 hover:bg-gray-100' }}">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                </svg>
+                                <span class="text-sm-responsive">QR Generator</span>
+                            </a>
+                            
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="flex items-center w-full px-4 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50">
