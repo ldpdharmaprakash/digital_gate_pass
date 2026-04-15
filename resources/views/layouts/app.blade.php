@@ -13,8 +13,7 @@
 
         @php
         use App\Support\CollegeTheme;
-        $college = session('college', 'engineering');
-        $theme = CollegeTheme::getTheme($college);
+        $theme = CollegeTheme::getUserTheme();
         @endphp
 
         <!-- Dynamic Theme Styles -->
@@ -348,22 +347,6 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 {{ $header }}
-                            </div>
-                            
-                            <!-- College/Role Selection Dropdown -->
-                            <div class="flex items-center space-x-4">
-                                <span class="text-sm text-secondary-theme font-medium">Select Theme:</span>
-                                <form method="GET" action="/set-college" class="flex">
-                                    <select name="college"
-                                        onchange="this.form.submit()"
-                                        class="appearance-none bg-white/90 backdrop-blur border border-gray-300 rounded-lg text-sm px-4 py-2 pr-8 hover:border-gray-400 focus-theme transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md">
-                                        <option value="engineering" {{ session('college')=='engineering'?'selected':'' }}>🔧 Engineering College</option>
-                                        <option value="arts" {{ session('college')=='arts'?'selected':'' }}>🎨 Arts & Science College</option>
-                                        <option value="polytechnic" {{ session('college')=='polytechnic'?'selected':'' }}>⚙️ Polytechnic College</option>
-                                        <option value="warden" {{ session('college')=='warden'?'selected':'' }}>🛡️ Warden</option>
-                                        <option value="security" {{ session('college')=='security'?'selected':'' }}>🔐 Security</option>
-                                    </select>
-                                </form>
                             </div>
                         </div>
                     </div>

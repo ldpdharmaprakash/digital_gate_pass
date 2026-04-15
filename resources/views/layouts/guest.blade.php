@@ -16,8 +16,7 @@
 
         @php
         use App\Support\CollegeTheme;
-        $college = session('college', 'engineering');
-        $theme = CollegeTheme::getTheme($college);
+        $theme = CollegeTheme::getUserTheme();
         @endphp
 
         <!-- Scripts -->

@@ -19,8 +19,7 @@
 
         @php
         use App\Support\CollegeTheme;
-        $college = session('college', 'engineering');
-        $theme = CollegeTheme::getTheme($college);
+        $theme = CollegeTheme::getUserTheme();
         @endphp
 
         <!-- Scripts -->
@@ -705,7 +704,7 @@
                         
                         <div class="flex items-center space-x-4 mobile-stack mobile-spacing">
                             <!-- College/Role Selection Dropdown -->
-                            <div class="flex items-center space-x-2">
+                            <div class="flex items-center space-x-2 " style="display: none;">
                                 <span class="text-sm text-gray-600 font-medium">Theme:</span>
                                 <form method="GET" action="/set-college" class="flex">
                                     <select name="college"

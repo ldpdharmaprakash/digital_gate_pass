@@ -16,9 +16,36 @@ class StudentController extends Controller
         $this->middleware('role:student');
     }
 
+    /**
+     * Get student record or create one if it doesn't exist
+     */
+    private function getOrCreateStudent()
+    {
+        $user = Auth::user();
+        $student = $user->student;
+
+        if (!$student) {
+            // Create a basic student record
+            $student = Student::create([
+                'user_id' => $user->id,
+                'department_id' => 1, // Default department - should be updated
+                'register_number' => 'TEMP' . $user->id,
+                'semester' => 1,
+                'section' => 'A',
+                'hosteller' => 'no',
+                'parent_name' => 'Pending',
+                'parent_phone' => '0000000000',
+                'address' => 'Pending',
+            ]);
+        }
+
+        return $student;
+    }
+
     public function dashboard()
     {
-        $student = Auth::user()->student->load(['user', 'department']);
+        $student = $this->getOrCreateStudent();
+        $student->load(['user', 'department']);
         
         $totalGatepasses = $student->gatepasses()->count();
         $pendingGatepasses = $student->pendingGatepasses()->count();
@@ -42,13 +69,14 @@ class StudentController extends Controller
 
     public function profile()
     {
-        $student = Auth::user()->student->load(['user', 'department']);
+        $student = $this->getOrCreateStudent();
+        $student->load(['user', 'department']);
         return view('student.profile', compact('student'));
     }
 
     public function createGatepass()
     {
-        $student = Auth::user()->student;
+        $student = $this->getOrCreateStudent();
         return view('student.gatepass.create', compact('student'));
     }
 
@@ -61,7 +89,7 @@ class StudentController extends Controller
             'reason' => 'required|string|max:500'
         ]);
 
-        $student = Auth::user()->student;
+        $student = $this->getOrCreateStudent();
 
         $existingGatepass = Gatepass::where('student_id', $student->id)
             ->where('college_id', $this->getCurrentCollegeId())
@@ -89,7 +117,7 @@ class StudentController extends Controller
 
     public function indexGatepasses(Request $request)
     {
-        $student = Auth::user()->student;
+        $student = $this->getOrCreateStudent();
         
         $query = $student->gatepasses()
             ->with(['student.user', 'student.department']);
@@ -114,7 +142,9 @@ class StudentController extends Controller
 
     public function showGatepass(Gatepass $gatepass)
     {
-        if ($gatepass->student_id !== Auth::user()->student->id) {
+        $student = $this->getOrCreateStudent();
+        
+        if ($gatepass->student_id !== $student->id) {
             abort(403);
         }
 

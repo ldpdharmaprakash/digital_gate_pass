@@ -4,6 +4,42 @@ namespace App\Support;
 
 class CollegeTheme
 {
+    /**
+     * Get theme based on authenticated user's college data
+     */
+    public static function getUserTheme()
+    {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return self::getTheme('engineering'); // Default fallback
+        }
+        
+        // Get college type from user's college relationship
+        $collegeType = 'engineering'; // Default
+        
+        if ($user->college) {
+            $collegeType = $user->college->college_type ?? 'engineering';
+        }
+        
+        // For admin role, use admin theme
+        if ($user->role === 'admin') {
+            $collegeType = 'admin';
+        }
+        
+        // For warden role, use warden theme
+        if ($user->role === 'warden') {
+            $collegeType = 'warden';
+        }
+        
+        // For security role, use security theme
+        if ($user->role === 'security') {
+            $collegeType = 'security';
+        }
+        
+        return self::getTheme($collegeType);
+    }
+
     public static function getTheme($college = 'engineering')
     {
         $themes = [
