@@ -35,6 +35,9 @@ class QRAuthController extends Controller
             // Regenerate session for security
             Session::regenerate();
             
+            // Set flag to indicate successful QR login
+            Session::flash('qr_login_success', true);
+            
             // Redirect based on user role
             return $this->redirectToDashboard($user);
             

@@ -567,5 +567,56 @@
             eyeIcon.classList.add('fa-eye');
         }
     });
+
+    // Handle camera management based on session flags
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if user was just logged out - auto-start camera on QR tab
+        @if(session('user_logged_out'))
+            console.log('User was logged out, camera will auto-start on QR tab');
+            // Set a flag to auto-start camera when QR tab is selected
+            window.shouldAutoStartCamera = true;
+        @endif
+        
+        // Check if QR login was successful - show success message
+        @if(session('qr_login_success'))
+            console.log('QR login was successful');
+            // Show a brief success message before redirect
+            const qrTab = document.getElementById('qr-tab');
+            if (qrTab) {
+                // Add a temporary success indicator
+                const successDiv = document.createElement('div');
+                successDiv.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4';
+                successDiv.innerHTML = '<i class="fas fa-check-circle mr-2"></i>QR login successful! Redirecting...';
+                
+                const qrContent = document.getElementById('qr-content');
+                if (qrContent) {
+                    qrContent.insertBefore(successDiv, qrContent.firstChild);
+                    
+                    // Remove success message after 3 seconds
+                    setTimeout(() => {
+                        if (successDiv.parentNode) {
+                            successDiv.parentNode.removeChild(successDiv);
+                        }
+                    }, 3000);
+                }
+            }
+        @endif
+    });
+
+    // Modify switchTab to handle auto-start camera flag
+    const originalSwitchTab = switchTab;
+    switchTab = function(tab) {
+        // Call original function
+        originalSwitchTab(tab);
+        
+        // Auto-start camera if flag is set and QR tab is selected
+        if (tab === 'qr' && window.shouldAutoStartCamera && !isScanning) {
+            console.log('Auto-starting camera due to logout flag');
+            setTimeout(() => {
+                startScanner();
+                window.shouldAutoStartCamera = false; // Reset flag
+            }, 500);
+        }
+    };
 </script>
 </x-guest-layout>

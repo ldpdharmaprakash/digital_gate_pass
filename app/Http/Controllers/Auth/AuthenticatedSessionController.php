@@ -52,6 +52,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
+        // Set flag to indicate user was just logged out (for camera auto-restart)
+        $request->session()->flash('user_logged_out', true);
+
         return redirect('/');
     }
 }
