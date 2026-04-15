@@ -107,7 +107,8 @@
             <div id="qr-reader" class="mb-4 relative">
                 <div class="scanner-placeholder">
                     <i class="fas fa-qrcode text-6xl text-gray-300 mb-4"></i>
-                    <p class="text-gray-500 text-center">Click "Start Camera" to begin scanning</p>
+                    <p class="text-gray-500 text-center">Camera will start automatically when QR tab is selected</p>
+                    <p class="text-gray-400 text-sm text-center mt-2">Please allow camera access when prompted</p>
                 </div>
             </div>
             
@@ -242,6 +243,13 @@
         if (tab !== 'qr' && isScanning) {
             stopScanner();
         }
+        
+        // Auto-start scanner when switching to QR tab
+        if (tab === 'qr' && !isScanning) {
+            setTimeout(() => {
+                startScanner();
+            }, 500); // Small delay to ensure tab is fully visible
+        }
     }
 
     // QR Scanner functions
@@ -268,7 +276,7 @@
             return;
         }
         
-        qrReader.innerHTML = '<div class="scanner-loading"><i class="fas fa-spinner fa-spin text-4xl text-indigo-600"></i><p class="text-gray-600 mt-2">Initializing camera...</p></div>';
+        showScannerLoading();
         
         // Check for camera support
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -368,7 +376,21 @@
         qrReader.innerHTML = `
             <div class="scanner-placeholder">
                 <i class="fas fa-qrcode text-6xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500 text-center">Click "Start Camera" to begin scanning</p>
+                <p class="text-gray-500 text-center">Camera will start automatically when QR tab is selected</p>
+                <p class="text-gray-400 text-sm text-center mt-2">Please allow camera access when prompted</p>
+            </div>
+        `;
+    }
+
+    function showScannerLoading() {
+        const qrReader = document.getElementById('qr-reader');
+        qrReader.innerHTML = `
+            <div class="scanner-loading">
+                <div class="flex flex-col items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+                    <p class="text-gray-600 text-center">Initializing camera...</p>
+                    <p class="text-gray-500 text-sm text-center mt-2">Please allow camera access when prompted</p>
+                </div>
             </div>
         `;
     }
