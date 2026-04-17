@@ -9,6 +9,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\HodController;
 use App\Http\Controllers\WardenController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GatepassApprovalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -111,4 +112,36 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Gatepass Email Approval Routes
+Route::get('/gatepass/approve/{gatepassId}/{recipientId}/{token}', [GatepassApprovalController::class, 'approve'])->name('gatepass.approve.email');
+Route::get('/gatepass/reject/{gatepassId}/{recipientId}/{token}', [GatepassApprovalController::class, 'reject'])->name('gatepass.reject.email');
+
+
+// Email notification testing routes
+Route::get('/test-email-notifications', [App\Http\Controllers\EmailNotificationController::class, 'testEmailNotifications']);
+Route::get('/test-email', [App\Http\Controllers\EmailNotificationController::class, 'testEmailSending']);
+Route::get('/email-config', [App\Http\Controllers\EmailNotificationController::class, 'showEmailConfig']);
+Route::get('/test-gatepass-notification', [App\Http\Controllers\EmailNotificationController::class, 'sendTestGatepassNotification']);
+Route::get('/create-test-users', [App\Http\Controllers\EmailNotificationController::class, 'createTestUsers']);
+
 require __DIR__.'/auth.php';
+
+// Security Routes
+Route::prefix('security')->middleware(['auth', 'role:security'])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\SecurityController::class, 'dashboard'])->name('security.dashboard');
+    Route::get('/gatepasses', [App\Http\Controllers\SecurityController::class, 'index'])->name('security.gatepasses');
+    Route::get('/gatepasses/pending', [App\Http\Controllers\SecurityController::class, 'pending'])->name('security.gatepasses.pending');
+    Route::get('/gatepasses/approved', [App\Http\Controllers\SecurityController::class, 'approved'])->name('security.gatepasses.approved');
+    Route::get('/gatepasses/rejected', [App\Http\Controllers\SecurityController::class, 'rejected'])->name('security.gatepasses.rejected');
+    
+    // QR Scanning and Verification
+    Route::get('/scan', [App\Http\Controllers\SecurityController::class, 'scanQR'])->name('security.scan');
+    Route::post('/verify-gatepass', [App\Http\Controllers\SecurityController::class, 'verifyGatepass'])->name('security.verify');
+    
+    // Entry/Exit Management
+    Route::post('/mark-exit', [App\Http\Controllers\SecurityController::class, 'markExit'])->name('security.mark.exit');
+    Route::post('/mark-entry', [App\Http\Controllers\SecurityController::class, 'markEntry'])->name('security.mark.entry');
+    
+    // Security Logs
+    Route::get('/logs', [App\Http\Controllers\SecurityController::class, 'logs'])->name('security.logs');
+});

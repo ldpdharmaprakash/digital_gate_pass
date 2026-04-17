@@ -27,6 +27,12 @@ class Gatepass extends Model
         'staff_approved_by',
         'hod_approved_by',
         'warden_approved_by',
+        'staff_rejected_by',
+        'hod_rejected_by',
+        'warden_rejected_by',
+        'staff_rejected_at',
+        'hod_rejected_at',
+        'warden_rejected_at',
         'qr_code',
         'is_active',
     ];
@@ -39,6 +45,9 @@ class Gatepass extends Model
         'hod_approved_at' => 'datetime',
         'warden_approved_at' => 'datetime',
         'final_approved_at' => 'datetime',
+        'staff_rejected_at' => 'datetime',
+        'hod_rejected_at' => 'datetime',
+        'warden_rejected_at' => 'datetime',
         'is_active' => 'boolean',
     ];
 

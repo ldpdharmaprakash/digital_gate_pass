@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\SecurityController;
 
 class DashboardController extends Controller
 {
@@ -27,6 +28,8 @@ class DashboardController extends Controller
                 return app(WardenController::class)->dashboard();
             case 'admin':
                 return app(AdminController::class)->dashboard();
+            case 'security':
+                return app(SecurityController::class)->dashboard();
             default:
                 abort(403);
         }

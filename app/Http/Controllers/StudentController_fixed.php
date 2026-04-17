@@ -153,7 +153,7 @@ class StudentController extends Controller
         return view('student.gatepass.show', compact('gatepass'));
     }
 
-    protected function getCurrentCollegeId()
+    private function getCurrentCollegeId()
     {
         return Auth::user()->college_id;
     }

@@ -19,6 +19,7 @@ class ApplyCollegeTheme
             if ($college) {
                 Session::put('theme_primary', $college->primary_color);
                 Session::put('theme_secondary', $college->secondary_color);
+                Session::put('theme_color', $college->theme_color);
                 Session::put('college_name', $college->name);
                 Session::put('college_code', $college->code);
             }

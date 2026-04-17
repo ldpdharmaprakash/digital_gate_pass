@@ -329,13 +329,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased page-bg">
-        <!-- Debug Theme Info -->
-        <div class="debug-theme">
-            College: {{ $college }}<br>
-            Primary: {{ $theme['primary'] }}<br>
-            Sidebar: {{ $theme['sidebar_active'] }}
-        </div>
+    <body class="font-sans antialiased page-bg {{ $bodyClass ?? '' }}">
         
         <div class="min-h-screen">
             @include('layouts.navigation')
@@ -355,7 +349,7 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                @yield('content')
             </main>
         </div>
     </body>
