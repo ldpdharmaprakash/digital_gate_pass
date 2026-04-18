@@ -8,24 +8,25 @@
     <div class="mb-8 flex items-center justify-between">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Gatepass Details</h1>
-            <p class="text-gray-600 mt-2">Review gatepass request information</p>
+            <p class="text-gray-600 mt-2">Review hosteller gatepass request</p>
         </div>
-        <a href="{{ route('hod.gatepasses.department') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+        <a href="{{ route('hod.gatepasses.pending') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
             <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
-            Back to Department Gatepasses
+            Back to Pending
         </a>
     </div>
 
-    <!-- Status Header -->
+    <!-- Gatepass Information -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+        <!-- Status Header -->
         <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
             <div class="flex items-center justify-between">
                 <div>
                     <div class="flex items-center space-x-3">
                         <h2 class="text-2xl font-bold text-gray-900">Gatepass #{{ str_pad($gatepass->id, 6, '0', STR_PAD_LEFT) }}</h2>
-                        @if($gatepass->status === 'pending')
+                        @if($gatepass->status === 'hod_approved')
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 animate-pulse">
                                 Pending Your Approval
                             </span>
@@ -76,6 +77,10 @@
                             <dt class="text-sm font-medium text-gray-600">Semester:</dt>
                             <dd class="text-sm font-semibold text-gray-900">{{ $gatepass->student->semester }}</dd>
                         </div>
+                        <div class="flex justify-between">
+                            <dt class="text-sm font-medium text-gray-600">Hosteller:</dt>
+                            <dd class="text-sm font-semibold text-gray-900">{{ $gatepass->student->hosteller === 'yes' ? 'Yes' : 'Day Scholar' }}</dd>
+                        </div>
                     </div>
                 </div>
 
@@ -104,6 +109,10 @@
                             <dt class="text-sm font-medium text-gray-600">Duration:</dt>
                             <dd class="text-sm font-semibold text-gray-900">{{ $gatepass->out_time->diffInHours($gatepass->in_time) }} hours</dd>
                         </div>
+                        <div class="flex justify-between">
+                            <dt class="text-sm font-medium text-gray-600">Status:</dt>
+                            <dd class="text-sm font-semibold text-gray-900">{{ ucfirst(str_replace('_', ' ', $gatepass->status)) }}</dd>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -121,10 +130,119 @@
                 </div>
             </div>
 
+            <!-- Approval Status -->
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Approval Status
+                </h3>
+                <div class="space-y-4">
+                    <!-- Staff Approval -->
+                    <div class="border rounded-lg p-4 @if($gatepass->staff_approved_at) border-green-200 bg-green-50 @else border-gray-200 bg-gray-50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full @if($gatepass->staff_approved_at) bg-green-100 @else bg-gray-200 flex items-center justify-center mr-3">
+                                    @if($gatepass->staff_approved_at)
+                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    @else
+                                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    @endif
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">Staff Approval</h4>
+                                    @if($gatepass->staff_approved_at)
+                                        <p class="text-xs text-gray-600">Approved by {{ $gatepass->staffApprovedBy->name }} on {{ $gatepass->staff_approved_at->format('M d, Y h:i A') }}</p>
+                                    @else
+                                        <p class="text-xs text-gray-600">Pending</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @if($gatepass->staff_remarks)
+                                <div class="text-sm text-gray-600">
+                                    <strong>Remarks:</strong> {{ $gatepass->staff_remarks }}
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- HOD Approval -->
+                    <div class="border rounded-lg p-4 @if($gatepass->hod_approved_at) border-green-200 bg-green-50 @else border-gray-200 bg-gray-50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full @if($gatepass->hod_approved_at) bg-green-100 @else bg-gray-200 flex items-center justify-center mr-3">
+                                    @if($gatepass->hod_approved_at)
+                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    @else
+                                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    @endif
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">HOD Approval</h4>
+                                    @if($gatepass->hod_approved_at)
+                                        <p class="text-xs text-gray-600">Approved by {{ $gatepass->hodApprovedBy->name }} on {{ $gatepass->hod_approved_at->format('M d, Y h:i A') }}</p>
+                                    @else
+                                        <p class="text-xs text-gray-600">Pending</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @if($gatepass->hod_remarks)
+                                <div class="text-sm text-gray-600">
+                                    <strong>Remarks:</strong> {{ $gatepass->hod_remarks }}
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Warden Approval (if hosteller) -->
+                    @if($gatepass->student->hosteller === 'yes')
+                        <div class="border rounded-lg p-4 @if($gatepass->warden_approved_at) border-green-200 bg-green-50 @else border-gray-200 bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full @if($gatepass->warden_approved_at) bg-green-100 @else bg-gray-200 flex items-center justify-center mr-3">
+                                        @if($gatepass->warden_approved_at)
+                                            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        @else
+                                            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Warden Approval</h4>
+                                        @if($gatepass->warden_approved_at)
+                                            <p class="text-xs text-gray-600">Approved by {{ $gatepass->wardenApprovedBy->name }} on {{ $gatepass->warden_approved_at->format('M d, Y h:i A') }}</p>
+                                        @else
+                                            <p class="text-xs text-gray-600">Pending</p>
+                                        @endif
+                                    </div>
+                                </div>
+                                @if($gatepass->warden_remarks)
+                                    <div class="text-sm text-gray-600">
+                                        <strong>Remarks:</strong> {{ $gatepass->warden_remarks }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <!-- Approval Actions -->
-            @if($gatepass->canBeApprovedByHod())
+            @if($gatepass->canUserChangeDecision(Auth::user()) || $gatepass->canBeApprovedByHod())
                 <div class="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Approval Action</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">HOD Approval Action</h3>
                     <form method="POST" action="{{ route('hod.gatepasses.approve', $gatepass) }}">
                         @csrf
                         <div class="space-y-4">
@@ -132,8 +250,14 @@
                                 <label for="action" class="block text-sm font-medium text-gray-700 mb-2">Action</label>
                                 <select name="action" id="action" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                                     <option value="">Select Action</option>
-                                    <option value="approve">Approve</option>
-                                    <option value="reject">Reject</option>
+                                    @if($gatepass->status === 'staff_approved')
+                                        <option value="approve">Approve</option>
+                                        <option value="reject">Reject</option>
+                                    @elseif($gatepass->status === 'hod_rejected')
+                                        <option value="approve">Re-approve</option>
+                                    @elseif($gatepass->status === 'hod_approved')
+                                        <option value="reject">Change to Reject</option>
+                                    @endif
                                 </select>
                             </div>
                             <div>
@@ -144,7 +268,7 @@
                                 <button type="submit" class="btn-primary px-6 py-2 text-white rounded-lg">
                                     Submit Action
                                 </button>
-                                <a href="{{ route('hod.gatepasses.department') }}" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                <a href="{{ route('hod.gatepasses.pending') }}" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                                     Cancel
                                 </a>
                             </div>
@@ -152,104 +276,6 @@
                     </form>
                 </div>
             @endif
-
-            <!-- Approval Timeline -->
-            <div class="mt-8">
-                <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Approval Timeline
-                </h3>
-                
-                <div class="space-y-4">
-                    <!-- Staff Approval -->
-                    <div class="flex items-start space-x-4">
-                        <div class="flex-shrink-0">
-                            @if($gatepass->staff_approved_at)
-                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            @else
-                                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            @endif
-                        </div>
-                        <div class="flex-1 bg-white rounded-lg border border-gray-200 p-4">
-                            <h4 class="font-semibold text-gray-900">Staff Approval</h4>
-                            @if($gatepass->staff_approved_at)
-                                <p class="text-sm text-green-600 mt-1">Approved by {{ $gatepass->staffApprovedBy->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $gatepass->staff_approved_at->format('M d, Y h:i A') }}</p>
-                            @else
-                                <p class="text-sm text-gray-500 mt-1">Pending</p>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- HOD Approval -->
-                    <div class="flex items-start space-x-4">
-                        <div class="flex-shrink-0">
-                            @if($gatepass->hod_approved_at)
-                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            @else
-                                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            @endif
-                        </div>
-                        <div class="flex-1 bg-white rounded-lg border border-gray-200 p-4">
-                            <h4 class="font-semibold text-gray-900">HOD Approval</h4>
-                            @if($gatepass->hod_approved_at)
-                                <p class="text-sm text-green-600 mt-1">Approved by {{ $gatepass->hodApprovedBy->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $gatepass->hod_approved_at->format('M d, Y h:i A') }}</p>
-                            @else
-                                <p class="text-sm text-yellow-600 mt-1">Pending Your Approval</p>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Warden Approval (for hostellers) -->
-                    @if($gatepass->student->hosteller === 'yes')
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0">
-                                @if($gatepass->warden_approved_at)
-                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                @else
-                                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="flex-1 bg-white rounded-lg border border-gray-200 p-4">
-                                <h4 class="font-semibold text-gray-900">Warden Approval</h4>
-                                @if($gatepass->warden_approved_at)
-                                    <p class="text-sm text-green-600 mt-1">Approved by {{ $gatepass->wardenApprovedBy->name }}</p>
-                                    <p class="text-xs text-gray-500">{{ $gatepass->warden_approved_at->format('M d, Y h:i A') }}</p>
-                                @else
-                                    <p class="text-sm text-gray-500 mt-1">Pending</p>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
         </div>
     </div>
 </div>

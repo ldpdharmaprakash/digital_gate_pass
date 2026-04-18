@@ -71,6 +71,19 @@ class HodController extends Controller
         return view('hod.gatepass.pending', compact('pendingGatepasses'));
     }
 
+    public function getGatepassDetails(Gatepass $gatepass)
+    {
+        // Load gatepass with relationships
+        $gatepass->load(['student.user', 'student.department', 'staffApprovedBy']);
+        
+        // Format dates for better display
+        $gatepass->gatepass_date = $gatepass->gatepass_date->format('d M Y');
+        $gatepass->out_time = $gatepass->out_time->format('h:i A');
+        $gatepass->in_time = $gatepass->in_time->format('h:i A');
+        
+        return response()->json($gatepass);
+    }
+
     public function approveGatepass(Request $request, Gatepass $gatepass)
     {
         if (!$gatepass->canBeApprovedByHod()) {

@@ -60,6 +60,13 @@ class GatepassNotificationMail extends Mailable
     {
         return new Content(
             view: 'emails.gatepass.notification',
+            with: [
+                'gatepass' => $this->gatepass,
+                'recipient' => $this->recipient,
+                'approvalType' => $this->approvalType,
+                'approveToken' => $this->approveToken,
+                'rejectToken' => $this->rejectToken,
+            ]
         );
     }
 

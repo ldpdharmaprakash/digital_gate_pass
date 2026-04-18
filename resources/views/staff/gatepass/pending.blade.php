@@ -107,30 +107,55 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
-                                    <button @click="viewDetails({{ $gatepass->id }})" class="text-blue-600 hover:text-blue-900">
+                                    <a href="{{ route('staff.gatepasses.show', $gatepass) }}" class="text-blue-600 hover:text-blue-900">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                         </svg>
-                                    </button>
-                                    <form method="POST" action="{{ route('staff.gatepasses.approve', $gatepass) }}" class="inline">
-                                        @csrf
-                                        <input type="hidden" name="action" value="approve">
-                                        <button type="submit" class="text-green-600 hover:text-green-900" onclick="return confirm('Approve this gatepass request?')">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                    <form method="POST" action="{{ route('staff.gatepasses.approve', $gatepass) }}" class="inline">
-                                        @csrf
-                                        <input type="hidden" name="action" value="reject">
-                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Reject this gatepass request?')">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    </a>
+                                    
+                                    @if($gatepass->status === 'pending')
+                                        <form method="POST" action="{{ route('staff.gatepasses.approve', $gatepass) }}" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="action" value="approve">
+                                            <button type="submit" class="text-green-600 hover:text-green-900" onclick="return confirm('Approve this gatepass request?')" title="Approve">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ route('staff.gatepasses.approve', $gatepass) }}" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="action" value="reject">
+                                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Reject this gatepass request?')" title="Reject">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @elseif($gatepass->status === 'staff_rejected')
+                                        <form method="POST" action="{{ route('staff.gatepasses.approve', $gatepass) }}" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="action" value="approve">
+                                            <button type="submit" class="text-green-600 hover:text-green-900" onclick="return confirm('Re-approve this gatepass request?')" title="Re-approve">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <span class="text-xs text-gray-500" title="Rejected by you">Can re-approve</span>
+                                    @elseif($gatepass->status === 'staff_approved')
+                                        <form method="POST" action="{{ route('staff.gatepasses.approve', $gatepass) }}" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="action" value="reject">
+                                            <button type="submit" class="text-orange-600 hover:text-orange-900" onclick="return confirm('Change decision to reject?')" title="Change to reject">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <span class="text-xs text-gray-500" title="Approved by you">Can reject</span>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -156,5 +181,4 @@
             </div>
         @endif
     </div>
-</div>
 @endsection

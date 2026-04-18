@@ -27,6 +27,10 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// Public gatepass QR access (for both students and security)
+Route::get('/gatepass-qr/{gatepass}', [QRAuthController::class, 'showGatepassByQR'])->name('gatepass.qr.show');
+Route::get('/gatepass-qr/{gatepass}/generate', [QRAuthController::class, 'generateGatepassQR'])->name('gatepass.qr.generate');
+
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -47,6 +51,8 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::get('/profile', [StaffController::class, 'profile'])->name('profile');
     Route::get('/gatepasses/pending', [StaffController::class, 'pendingGatepasses'])->name('gatepasses.pending');
     Route::post('/gatepasses/{gatepass}/approve', [StaffController::class, 'approveGatepass'])->name('gatepasses.approve');
+    Route::get('/gatepasses/{gatepass}/details', [StaffController::class, 'getGatepassDetails'])->name('gatepasses.details');
+    Route::get('/gatepasses/{gatepass}', [StaffController::class, 'showGatepass'])->name('gatepasses.show');
     Route::get('/gatepasses/approved', [StaffController::class, 'approvedGatepasses'])->name('gatepasses.approved');
     Route::get('/students', [StaffController::class, 'students'])->name('students.index');
     Route::get('/students/{student}/gatepasses', [StaffController::class, 'studentGatepasses'])->name('students.gatepasses');
@@ -57,7 +63,7 @@ Route::middleware(['auth', 'role:hod'])->prefix('hod')->name('hod.')->group(func
     Route::get('/profile', [HodController::class, 'profile'])->name('profile');
     Route::get('/gatepasses/pending', [HodController::class, 'pendingGatepasses'])->name('gatepasses.pending');
     Route::post('/gatepasses/{gatepass}/approve', [HodController::class, 'approveGatepass'])->name('gatepasses.approve');
-    Route::get('/gatepasses/department', [HodController::class, 'departmentGatepasses'])->name('gatepasses.department');
+    Route::get('/gatepasses/{gatepass}/details', [HodController::class, 'getGatepassDetails'])->name('gatepasses.details');
     Route::get('/gatepasses/{gatepass}', [HodController::class, 'showGatepass'])->name('gatepasses.show');
     Route::get('/gatepasses/approved', [HodController::class, 'approvedGatepasses'])->name('gatepasses.approved');
     Route::get('/reports', [HodController::class, 'reports'])->name('reports');

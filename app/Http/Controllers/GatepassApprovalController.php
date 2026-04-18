@@ -32,13 +32,18 @@ class GatepassApprovalController extends Controller
                     ->with('error', 'You do not have permission to approve this gatepass.');
             }
             
+            // Auto-login the user
+            Auth::login($recipient);
+            
             // Process approval
             $this->processApproval($gatepass, $recipient, 'approved');
             
             // Send acknowledgment emails
             $this->sendAcknowledgmentEmails($gatepass, $recipient, 'approved');
             
-            return redirect()->route('login')
+            // Redirect to appropriate dashboard based on user role
+            $dashboardRoute = $this->getDashboardRoute($recipient->role);
+            return redirect()->route($dashboardRoute)
                 ->with('success', 'Gatepass approved successfully!');
                 
         } catch (\Exception $e) {
@@ -69,13 +74,18 @@ class GatepassApprovalController extends Controller
                     ->with('error', 'You do not have permission to reject this gatepass.');
             }
             
+            // Auto-login the user
+            Auth::login($recipient);
+            
             // Process rejection
             $this->processApproval($gatepass, $recipient, 'rejected');
             
             // Send acknowledgment emails
             $this->sendAcknowledgmentEmails($gatepass, $recipient, 'rejected');
             
-            return redirect()->route('login')
+            // Redirect to appropriate dashboard based on user role
+            $dashboardRoute = $this->getDashboardRoute($recipient->role);
+            return redirect()->route($dashboardRoute)
                 ->with('success', 'Gatepass rejected successfully!');
                 
         } catch (\Exception $e) {
@@ -111,9 +121,9 @@ class GatepassApprovalController extends Controller
         $currentStatus = $gatepass->status;
         
         return match($userRole) {
-            'staff' => $currentStatus === 'pending',
-            'hod' => $currentStatus === 'staff_approved',
-            'warden' => in_array($currentStatus, ['staff_approved', 'hod_approved']),
+            'staff' => in_array($currentStatus, ['pending', 'staff_rejected']), // Can re-approve rejected
+            'hod' => in_array($currentStatus, ['staff_approved', 'hod_rejected']), // Can re-approve rejected
+            'warden' => in_array($currentStatus, ['staff_approved', 'hod_approved', 'warden_rejected']), // Can re-approve rejected
             'admin' => true, // Admin can approve at any stage
             default => false
         };
@@ -127,6 +137,9 @@ class GatepassApprovalController extends Controller
         $userRole = $recipient->role;
         $currentStatus = $gatepass->status;
         
+        // Check if this is a decision change (re-approval or rejection change)
+        $isDecisionChange = $this->isDecisionChange($gatepass, $recipient, $action);
+        
         if ($action === 'approved') {
             $newStatus = match($userRole) {
                 'staff' => 'staff_approved',
@@ -135,6 +148,9 @@ class GatepassApprovalController extends Controller
                 'admin' => 'final_approved',
                 default => $currentStatus
             };
+            
+            // Clear any previous rejection by this user
+            $this->clearPreviousRejection($gatepass, $userRole);
             
             // Set approver
             match($userRole) {
@@ -163,6 +179,9 @@ class GatepassApprovalController extends Controller
                 default => 'final_rejected'
             };
             
+            // Clear any previous approval by this user
+            $this->clearPreviousApproval($gatepass, $userRole);
+            
             // Set rejecter
             match($userRole) {
                 'staff' => $gatepass->staff_rejected_by = $recipient->id,
@@ -171,15 +190,89 @@ class GatepassApprovalController extends Controller
                 'admin' => $gatepass->warden_rejected_by = $recipient->id,
                 default => null
             };
+            
+            // Set rejection timestamp
+            match($userRole) {
+                'staff' => $gatepass->staff_rejected_at = now(),
+                'hod' => $gatepass->hod_rejected_at = now(),
+                'warden' => $gatepass->warden_rejected_at = now(),
+                'admin' => $gatepass->warden_rejected_at = now(),
+                default => null
+            };
         }
         
         $gatepass->status = $newStatus;
         $gatepass->save();
         
+        // Log the decision change if applicable
+        if ($isDecisionChange) {
+            Log::info("Decision changed by {$userRole} for gatepass {$gatepass->id}: {$currentStatus} -> {$newStatus}");
+        }
+        
         // Send notification to next approver if approved
         if ($action === 'approved' && $newStatus !== 'final_approved') {
             $this->notifyNextApprover($gatepass);
         }
+    }
+    
+    /**
+     * Check if this is a decision change
+     */
+    private function isDecisionChange(Gatepass $gatepass, User $recipient, string $action): bool
+    {
+        $userRole = $recipient->role;
+        $currentStatus = $gatepass->status;
+        
+        return match($userRole) {
+            'staff' => in_array($currentStatus, ['staff_rejected', 'staff_approved']),
+            'hod' => in_array($currentStatus, ['hod_rejected', 'hod_approved']),
+            'warden' => in_array($currentStatus, ['warden_rejected', 'warden_approved']),
+            default => false
+        };
+    }
+    
+    /**
+     * Clear previous rejection by user
+     */
+    private function clearPreviousRejection(Gatepass $gatepass, string $userRole)
+    {
+        match($userRole) {
+            'staff' => [
+                $gatepass->staff_rejected_by = null,
+                $gatepass->staff_rejected_at = null,
+            ],
+            'hod' => [
+                $gatepass->hod_rejected_by = null,
+                $gatepass->hod_rejected_at = null,
+            ],
+            'warden' => [
+                $gatepass->warden_rejected_by = null,
+                $gatepass->warden_rejected_at = null,
+            ],
+            default => null
+        };
+    }
+    
+    /**
+     * Clear previous approval by user
+     */
+    private function clearPreviousApproval(Gatepass $gatepass, string $userRole)
+    {
+        match($userRole) {
+            'staff' => [
+                $gatepass->staff_approved_by = null,
+                $gatepass->staff_approved_at = null,
+            ],
+            'hod' => [
+                $gatepass->hod_approved_by = null,
+                $gatepass->hod_approved_at = null,
+            ],
+            'warden' => [
+                $gatepass->warden_approved_by = null,
+                $gatepass->warden_approved_at = null,
+            ],
+            default => null
+        };
     }
     
     /**
@@ -219,6 +312,22 @@ class GatepassApprovalController extends Controller
         }
         
         return $query->first();
+    }
+    
+    /**
+     * Get dashboard route based on user role
+     */
+    private function getDashboardRoute(string $role): string
+    {
+        return match($role) {
+            'admin' => 'admin.dashboard',
+            'staff' => 'staff.dashboard',
+            'hod' => 'hod.dashboard',
+            'warden' => 'warden.dashboard',
+            'security' => 'security.dashboard',
+            'student' => 'student.dashboard',
+            default => 'dashboard'
+        };
     }
     
     /**

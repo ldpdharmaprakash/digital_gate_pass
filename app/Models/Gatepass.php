@@ -140,4 +140,115 @@ class Gatepass extends Model
     {
         return $query->whereIn('status', ['staff_rejected', 'hod_rejected', 'warden_rejected', 'final_rejected']);
     }
+
+    /**
+     * Check if gatepass is expired (in_time has passed)
+     */
+    public function isExpired()
+    {
+        return now()->isAfter($this->in_time);
+    }
+
+    /**
+     * Check if gatepass is currently active (not expired and approved)
+     */
+    public function isActive()
+    {
+        return $this->isFinalApproved() && !$this->isExpired();
+    }
+
+    /**
+     * Check if user can change their decision (re-approve rejected or reject approved)
+     */
+    public function canUserChangeDecision(User $user)
+    {
+        $userRole = $user->role;
+        $currentStatus = $this->status;
+
+        return match($userRole) {
+            'staff' => in_array($currentStatus, ['staff_rejected', 'staff_approved']),
+            'hod' => in_array($currentStatus, ['hod_rejected', 'hod_approved', 'staff_approved']),
+            'warden' => in_array($currentStatus, ['warden_rejected', 'warden_approved', 'hod_approved']),
+            'admin' => true, // Admin can change any decision
+            default => false
+        };
+    }
+
+    /**
+     * Get the next approval step based on current status
+     */
+    public function getNextApprovalStep()
+    {
+        return match($this->status) {
+            'pending' => 'staff',
+            'staff_approved' => 'hod',
+            'hod_approved' => 'warden',
+            'staff_rejected' => 'staff', // Can be re-approved by staff
+            'hod_rejected' => 'staff', // Can be re-started from staff
+            'warden_rejected' => 'staff', // Can be re-started from staff
+            default => null
+        };
+    }
+
+    /**
+     * Reset gatepass to previous state for re-approval
+     */
+    public function resetForReApproval(User $user)
+    {
+        $userRole = $user->role;
+        
+        match($userRole) {
+            'staff' => [
+                'status' => 'pending',
+                'staff_approved_by' => null,
+                'staff_approved_at' => null,
+                'staff_remarks' => null,
+                'staff_rejected_by' => null,
+                'staff_rejected_at' => null,
+            ],
+            'hod' => [
+                'status' => 'staff_approved',
+                'hod_approved_by' => null,
+                'hod_approved_at' => null,
+                'hod_remarks' => null,
+                'hod_rejected_by' => null,
+                'hod_rejected_at' => null,
+            ],
+            'warden' => [
+                'status' => 'hod_approved',
+                'warden_approved_by' => null,
+                'warden_approved_at' => null,
+                'warden_remarks' => null,
+                'warden_rejected_by' => null,
+                'warden_rejected_at' => null,
+            ],
+            default => null
+        };
+        
+        $this->save();
+    }
+
+    /**
+     * Auto-expire gatepasses that have passed their in_time
+     */
+    public static function expireExpiredGatepasses()
+    {
+        $expired = self::where('status', 'final_approved')
+                      ->where('in_time', '<', now())
+                      ->get();
+
+        foreach ($expired as $gatepass) {
+            $gatepass->update([
+                'status' => 'expired',
+                'is_active' => false
+            ]);
+            
+            // Send notification to student about expiration
+            \Mail::to($gatepass->student->user->email)->send(
+                new \App\Mail\GatepassExpiredMail($gatepass)
+            );
+        }
+
+        return $expired->count();
+    }
 }

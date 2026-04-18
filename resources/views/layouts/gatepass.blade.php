@@ -743,5 +743,8 @@
             <!-- Mobile sidebar overlay -->
             <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden" @click="sidebarOpen = false"></div>
         </div>
-    </body>
+    
+    <!-- Scripts Stack -->
+    @stack('scripts')
+</body>
 </html>

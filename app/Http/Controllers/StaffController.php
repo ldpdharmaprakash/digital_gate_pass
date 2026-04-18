@@ -56,7 +56,10 @@ class StaffController extends Controller
     public function pendingGatepasses()
     {
         $staff = Auth::user()->staff;
-        $pendingGatepasses = $staff->pendingGatepasses()
+        
+        // Get both pending and staff-rejected gatepasses (for decision changes)
+        $pendingGatepasses = Gatepass::where('college_id', $this->getCurrentCollegeId())
+            ->whereIn('status', ['pending', 'staff_rejected', 'staff_approved'])
             ->with(['student', 'student.department', 'student.user'])
             ->latest()
             ->paginate(10);
@@ -64,10 +67,35 @@ class StaffController extends Controller
         return view('staff.gatepass.pending', compact('pendingGatepasses'));
     }
 
+    public function getGatepassDetails(Gatepass $gatepass)
+    {
+        // Load gatepass with relationships
+        $gatepass->load(['student.user', 'student.department']);
+        
+        // Format dates for better display
+        $gatepass->gatepass_date = $gatepass->gatepass_date->format('d M Y');
+        $gatepass->out_time = $gatepass->out_time->format('h:i A');
+        $gatepass->in_time = $gatepass->in_time->format('h:i A');
+        
+        return response()->json($gatepass);
+    }
+
+    public function showGatepass(Gatepass $gatepass)
+    {
+        // Check if the gatepass belongs to the same college
+        if ($gatepass->college_id !== $this->getCurrentCollegeId()) {
+            abort(403, 'This action is unauthorized.');
+        }
+        
+        $gatepass->load(['student.user', 'student.department', 'staffApprovedBy', 'hodApprovedBy', 'wardenApprovedBy']);
+        return view('staff.gatepass.show', compact('gatepass'));
+    }
+
     public function approveGatepass(Request $request, Gatepass $gatepass)
     {
-        if (!$gatepass->canBeApprovedByStaff()) {
-            return back()->with('error', 'This gatepass cannot be approved at this stage.');
+        // Check if user can approve or change decision
+        if (!$gatepass->canUserChangeDecision(Auth::user()) && !$gatepass->canBeApprovedByStaff()) {
+            return back()->with('error', 'You cannot change this gatepass at this stage.');
         }
 
         $request->validate([

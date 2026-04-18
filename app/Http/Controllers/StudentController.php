@@ -148,14 +148,91 @@ class StudentController extends Controller
 
     public function showGatepass(Gatepass $gatepass)
     {
-        $this->authorize('view', $gatepass);
+        // Check if the gatepass belongs to the authenticated student
+        if ($gatepass->student_id !== Auth::user()->student->id) {
+            abort(403, 'This action is unauthorized.');
+        }
+        
         $gatepass->load(['student.user', 'student.department']);
         return view('student.gatepass.show', compact('gatepass'));
+    }
+
+    public function downloadGatepass(Gatepass $gatepass)
+    {
+        // Check if the gatepass belongs to the authenticated student
+        if ($gatepass->student_id !== Auth::user()->student->id) {
+            abort(403, 'This action is unauthorized.');
+        }
+        
+        // Check if gatepass is approved
+        if (!$gatepass->isFinalApproved()) {
+            return back()->with('error', 'Only approved gatepasses can be downloaded.');
+        }
+        
+        // Get theme color from college
+        $primaryColor = Auth::user()->college->primary_color ?? '#3B82F6';
+        
+        // Generate base64 images for PDF (handle missing files)
+        $watermarkBase64 = $this->imageToBase64(public_path('images/watermark.png'));
+        $logoBase64 = $this->imageToBase64(public_path('images/logo.png'));
+        
+        // Use default avatar if student photo doesn't exist
+        $studentPhotoPath = public_path('images/avatars/' . $gatepass->student->id . '.jpg');
+        if (!file_exists($studentPhotoPath)) {
+            // Use inline SVG as default avatar
+            $studentPhotoBase64 = 'data:image/svg+xml;base64,' . base64_encode(
+                '<svg width="120" height="150" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="150" fill="#f3f4f6"/><circle cx="60" cy="45" r="20" fill="#9ca3af"/><path d="M60 75c-22 0-40 18-40 40v10h80v-10c0-22-18-40-40-40z" fill="#9ca3af"/></svg>'
+            );
+        } else {
+            $studentPhotoBase64 = $this->imageToBase64($studentPhotoPath);
+        }
+        
+        // Generate QR code for this specific gatepass
+        $qrCode = null;
+        if ($gatepass->isFinalApproved()) {
+            try {
+                $qrUrl = route('gatepass.qr.show', $gatepass->id);
+                $qrApiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" . urlencode($qrUrl) . "&format=png&margin=2&ecc=H&color=000000&bgcolor=FFFFFF";
+                
+                // Download QR code image
+                $qrImageData = file_get_contents($qrApiUrl);
+                if ($qrImageData !== false) {
+                    $qrCode = 'data:image/png;base64,' . base64_encode($qrImageData);
+                }
+            } catch (\Exception $e) {
+                $qrCode = null;
+            }
+        }
+        
+        // Generate PDF
+        $pdf = \PDF::loadView('student.gatepass.pdf', compact(
+            'gatepass', 
+            'primaryColor',
+            'watermarkBase64',
+            'logoBase64', 
+            'studentPhotoBase64',
+            'qrCode'
+        ));
+        
+        return $pdf->download('gatepass-' . $gatepass->id . '.pdf');
     }
 
     protected function getCurrentCollegeId()
     {
         return Auth::user()->college_id;
+    }
+    
+    /**
+     * Convert image file to base64 string
+     */
+    private function imageToBase64($imagePath)
+    {
+        if (!file_exists($imagePath)) {
+            return null;
+        }
+        
+        $imageData = file_get_contents($imagePath);
+        return 'data:image/png;base64,' . base64_encode($imageData);
     }
 
     /**
