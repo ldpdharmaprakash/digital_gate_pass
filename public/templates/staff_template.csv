@@ -1,0 +1,6 @@
+name,username,email,password,role,phone,gender,college_id,department_id,employee_id,designation,type,qualifications,joining_date,is_class_incharge_a,is_class_incharge_b,is_class_incharge_2nd_a,is_class_incharge_2nd_b
+Dr. Sarah Johnson,sarahjohnson,sarah.johnson@college.edu,password,staff,9876543210,female,1,1,STAFF_CSE_001,Assistant Professor,teaching,PhD in Computer Science,2025-01-01,1,0,0,0
+Prof. Robert Chen,robertchen,robert.chen@college.edu,password,staff,9876543211,male,1,2,STAFF_ECE_001,Associate Professor,teaching,M.Tech Electronics,2025-01-01,1,1,0,0
+Dr. Emily Davis,emilydavis,emily.davis@college.edu,password,staff,9876543212,female,1,3,STAFF_MECH_001,Professor,teaching,PhD in Mechanical,2025-01-01,0,1,0,0
+James Wilson,jameswilson,james.wilson@college.edu,password,staff,9876543213,male,2,101,STAFF_TAMIL_001,Lecturer,teaching,M.A Tamil Literature,2025-01-01,1,1,0,0
+Maria Garcia,mariagarcia,maria.garcia@college.edu,password,staff,9876543214,female,2,102,STAFF_ENG_001,Lecturer,teaching,M.A English Literature,2025-01-01,1,0,0,0

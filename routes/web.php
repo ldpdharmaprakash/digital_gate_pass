@@ -96,6 +96,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::get('/reports/download', [AdminController::class, 'downloadReport'])->name('reports.download');
     Route::post('/export/gatepasses', [AdminController::class, 'exportGatepasses'])->name('export.gatepasses');
+    Route::get('/bulk-upload', [AdminController::class, 'bulkUpload'])->name('bulk-upload');
+    Route::post('/bulk-upload', [AdminController::class, 'processBulkUpload'])->name('process-bulk-upload');
+    Route::get('/download-template/{type}', [AdminController::class, 'downloadTemplate'])->name('download-template');
 });
 
 // QR Verification Routes (Public - for scanning)

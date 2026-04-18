@@ -1,0 +1,6 @@
+name,username,email,password,role,phone,gender,college_id,employee_id,hostel_type,appointment_date
+John Smith,johnsmith,john.smith@college.edu,password,warden,9876543210,male,1,WARDEN_BOYS_001,boys,2025-01-01
+Sarah Johnson,sarahjohnson,sarah.johnson@college.edu,password,warden,9876543211,female,1,WARDEN_GIRLS_001,girls,2025-01-01
+Robert Wilson,robertwilson,robert.wilson@college.edu,password,warden,9876543212,male,2,WARDEN_BOYS_002,boys,2025-01-01
+Maria Garcia,mariagarcia,maria.garcia@college.edu,password,warden,9876543213,female,2,WARDEN_GIRLS_002,girls,2025-01-01
+David Brown,davidbrown,david.brown@college.edu,password,warden,9876543214,male,3,WARDEN_MIXED_001,mixed,2025-01-01

@@ -16,6 +16,9 @@
         
         <!-- Alpine.js -->
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        
+        <!-- Heroicons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
         @php
         use App\Support\CollegeTheme;
@@ -258,6 +261,60 @@
                     width: calc(100% - var(--sidebar-width));
                     max-width: none;
                     position: relative;
+                }
+                
+                /* Enhanced Container */
+                .dropdown-container {
+                    position: relative;
+                    z-index: 9998;
+                }
+                
+                /* Admin Bulk Upload Styles */
+                .step-section {
+                    border: 1px solid #e9ecef;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    background-color: #f8f9fa;
+                }
+
+                .step-section h4 {
+                    color: #495057;
+                    margin-bottom: 15px;
+                    font-weight: 600;
+                }
+
+                .step-section h4 i {
+                    margin-right: 10px;
+                }
+
+                .card.border-primary {
+                    border-left: 4px solid #007bff !important;
+                }
+
+                .card.border-success {
+                    border-left: 4px solid #28a745 !important;
+                }
+
+                .card.border-warning {
+                    border-left: 4px solid #ffc107 !important;
+                }
+
+                .card.border-info {
+                    border-left: 4px solid #17a2b8 !important;
+                }
+
+                .custom-file-label::after {
+                    content: "Browse";
+                }
+
+                .table-sm {
+                    font-size: 0.875rem;
+                }
+
+                .table th {
+                    background-color: #f8f9fa;
+                    font-weight: 600;
                 }
             }
             
@@ -665,6 +722,12 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                     </svg>
                                     <span class="text-sm-responsive">Reports</span>
+                                </a>
+                                <a href="{{ route('admin.bulk-upload') }}" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('admin.bulk-upload') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88 7.903A5 5 0 1115.9 22a5 5 0 01-1.93-3.91 5.5 5.5 0 01-1.93-3.91A4 4 0 017 16zM7 8a3 3 0 110-6 3 3 0 016 6zm6 0v1h8v1a2 2 0 002 2v8a2 2 0 01-2 2H9a2 2 0 01-2-2v-8a2 2 0 00-2-2z"></path>
+                                    </svg>
+                                    <span class="text-sm-responsive">Bulk Upload</span>
                                 </a>
                             @endif
                         </div>

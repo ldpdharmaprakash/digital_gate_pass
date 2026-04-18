@@ -1,0 +1,5 @@
+name,username,email,password,role,phone,gender,college_id,department_id,register_number,semester,section,hosteller,parent_name,parent_phone,address,class_id
+John Doe,johndoe,john.doe@college.edu,password,student,9876543210,male,1,1,ENG2024001,1,A,no,John Parent,9876543211,123 Main Street,24
+Jane Smith,janesmith,jane.smith@college.edu,password,student,9876543211,female,1,1,ENG2024002,1,B,no,Jane Parent,9876543212,456 Oak Avenue,25
+Bob Wilson,bobwilson,bob.wilson@college.edu,password,student,9876543212,male,1,2,ENG2024003,1,A,no,Bob Parent,9876543213,789 Pine Road,28
+Alice Brown,alicebrown,alice.brown@college.edu,password,student,9876543213,female,2,101,ARTS2024001,1,A,no,Alice Parent,9876543214,321 Elm Street,36

@@ -11,9 +11,7 @@
             <p class="text-gray-600 mt-2">Add a new user to the system</p>
         </div>
         <a href="{{ route('admin.users.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
-            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
+            <i class="fas fa-arrow-left mr-1"></i>
             Back to Users
         </a>
     </div>

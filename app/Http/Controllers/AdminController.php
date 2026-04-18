@@ -9,10 +9,13 @@ use App\Models\Staff;
 use App\Models\Hod;
 use App\Models\Warden;
 use App\Models\Gatepass;
+use App\Http\Requests\BulkUploadRequest;
+use App\Imports\UsersImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
@@ -271,5 +274,66 @@ class AdminController extends Controller
     {
         $admin = Auth::user();
         return view('admin.profile', compact('admin'));
+    }
+
+    public function bulkUpload()
+    {
+        return view('admin.bulk-upload.index');
+    }
+
+    public function processBulkUpload(BulkUploadRequest $request)
+    {
+        try {
+            $userType = $request->user_type;
+            $file = $request->file('csv_file');
+
+            // Import the data
+            $import = new UsersImport($userType);
+            Excel::import($import, $file);
+
+            $results = $import->getResults();
+
+            return redirect()->route('admin.bulk-upload')
+                ->with('success', "{$results['success']} users imported successfully!")
+                ->with('errors', $results['errors'])
+                ->with('error_details', $results['error_details']);
+
+        } catch (\Exception $e) {
+            return redirect()->route('admin.bulk-upload')
+                ->with('error', 'Error uploading file: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadTemplate($type)
+    {
+        $templatePath = null;
+        $fileName = null;
+
+        switch ($type) {
+            case 'students':
+                $templatePath = public_path('templates/students_template.csv');
+                $fileName = 'students_template.csv';
+                break;
+            case 'staff':
+                $templatePath = public_path('templates/staff_template.csv');
+                $fileName = 'staff_template.csv';
+                break;
+            case 'hods':
+                $templatePath = public_path('templates/hods_template.csv');
+                $fileName = 'hods_template.csv';
+                break;
+            case 'wardens':
+                $templatePath = public_path('templates/wardens_template.csv');
+                $fileName = 'wardens_template.csv';
+                break;
+            default:
+                return redirect()->back()->with('error', 'Invalid template type');
+        }
+
+        if (!file_exists($templatePath)) {
+            return redirect()->back()->with('error', 'Template file not found');
+        }
+
+        return response()->download($templatePath, $fileName);
     }
 }
