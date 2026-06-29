@@ -62,6 +62,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
 Route::middleware(['auth', 'role:hod'])->prefix('hod')->name('hod.')->group(function () {
     Route::get('/profile', [HodController::class, 'profile'])->name('profile');
     Route::get('/gatepasses/pending', [HodController::class, 'pendingGatepasses'])->name('gatepasses.pending');
+    Route::get('/gatepasses/department', [HodController::class, 'departmentGatepasses'])->name('gatepasses.department');
     Route::post('/gatepasses/{gatepass}/approve', [HodController::class, 'approveGatepass'])->name('gatepasses.approve');
     Route::get('/gatepasses/{gatepass}/details', [HodController::class, 'getGatepassDetails'])->name('gatepasses.details');
     Route::get('/gatepasses/{gatepass}', [HodController::class, 'showGatepass'])->name('gatepasses.show');
